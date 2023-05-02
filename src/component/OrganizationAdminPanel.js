@@ -1,23 +1,37 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
-    Button, Divider, Grid,
+    Button,
+    Divider,
+    Grid,
     GridItem,
     Heading,
-    HStack, Link,
+    HStack,
+    Link,
     SimpleGrid,
+    Skeleton,
     Stack,
-    Stat, StatArrow, StatDownArrow, StatHelpText,
+    Stat,
+    StatArrow,
+    StatDownArrow,
+    StatHelpText,
     StatLabel,
-    StatNumber, StatUpArrow, Tag,
-    Text, VStack
+    StatNumber,
+    StatUpArrow,
+    Tag,
+    Text,
+    useToast
 } from "@chakra-ui/react";
 import {GridBlock, IconTextButton, MainHeader} from "./components";
-import {IoMdBicycle, IoMdCash, IoMdCodeWorking, IoMdLocate, IoMdPeople, IoMdPerson} from "react-icons/io";
+import {IoMdBicycle, IoMdCash, IoMdCodeWorking, IoMdLocate, IoMdPeople} from "react-icons/io";
 import {MapContainer, TileLayer} from "react-leaflet";
 import moment from "moment";
 import {useNavigate} from "react-router-dom";
+import {errorConverter} from "../error/ErrorConverter.js";
+import {rentService} from "../service/RentService.js";
+import {routes} from "../routes.js";
+import {userService} from "../service/UserService.js";
 
-export function LKPage() {
+export function OrganizationAdminPanel() {
     return (
         <Stack>
             <header>
@@ -32,28 +46,33 @@ export function LKPage() {
 
 function AdminPanel() {
     let navigate = useNavigate();
-
     return (
         <Stack p={5} spacing={5} divider={<Divider/>}>
+            <CheckTempPassword/>
             <CompanyInfoBlock/>
             <SimpleGrid minChildWidth={250} gap={4}>
                 <IconTextButton
+                    onClick={() => navigate(routes.inventories)}
                     icon={<IoMdBicycle size={64}/>}
                     text='Инвентарь'
                 />
                 <IconTextButton
+                    onClick={() => navigate(routes.offices)}
                     icon={<IoMdLocate size={64}/>}
                     text='Пункты проката'
                 />
                 <IconTextButton
+                    onClick={() => navigate(routes.financials)}
                     icon={<IoMdCash size={64}/>}
                     text='Финансы'
                 />
                 <IconTextButton
+                    onClick={() => navigate(routes.clients)}
                     icon={<IoMdPeople size={64}/>}
                     text='Клиенты'
                 />
                 <IconTextButton
+                    onClick={() => navigate(routes.employees)}
                     icon={<IoMdCodeWorking size={64}/>}
                     text='Сотрудники'
                 />
@@ -75,15 +94,61 @@ function AdminPanel() {
     )
 }
 
+function CheckTempPassword() {
+    let [user, setUser] = useState({})
+    let [loading, setLoading] = useState(true)
+
+
+    let toast = useToast();
+
+    async function loadCurrentUser() {
+        try {
+            setLoading(true)
+            let currentUser = await userService.me();
+            setUser(currentUser)
+        } catch (e) {
+            toast({
+                status: 'error',
+                title: errorConverter.convert(e)
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        loadCurrentUser()
+    }, [])
+
+    return <></>
+}
+
 function CompanyInfoBlock() {
+    let [employee, setEmployee] = useState({})
+    let [loading, setLoading] = useState(true)
+
+
+    let toast = useToast();
+
+    async function loadCurrentCompany() {
+
+    }
+
+    useEffect(() => {
+        loadCurrentCompany()
+    }, [])
+
+
     return (
-        <Stack>
-            <HStack>
-                <Heading size='lg'>ИП "ПРОКАТОФФ"</Heading>
-                <Tag colorScheme='yellow'>Ожидает верификации</Tag>
-            </HStack>
-            <Text color='gray'>ИНН: 123456789012</Text>
-        </Stack>
+        <Skeleton isLoaded={!loading}>
+            <Stack>
+                <HStack>
+                    <Heading size='lg'>{employee?.organization?.name}</Heading>
+                    <Tag colorScheme='yellow'>Ожидает верификации</Tag>
+                </HStack>
+                <Text color='gray'>ИНН: {employee?.organization?.inn}</Text>
+            </Stack>
+        </Skeleton>
     )
 }
 
@@ -127,57 +192,85 @@ function EquipmentStatusBlock() {
 }
 
 function FinanceBlock() {
+    let [stat, setStat] = useState({});
+    let [loading, setLoading] = useState(true);
+
+
+    let toast = useToast();
+
+    async function loadStat() {
+        try {
+            setLoading(true);
+            let loadedStat = await rentService.getStatMyOrganization();
+            setStat(loadedStat);
+        } catch (e) {
+            toast({
+                status: 'error',
+                title: errorConverter.convert(e)
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        loadStat()
+    }, [])
+
+
     return (
-        <SimpleGrid columns={[6,4,2,null]} w='100%' spacing={2}>
-            <Stat>
-                <StatLabel>
-                    Поездок
-                </StatLabel>
-                <StatNumber>
-                    10
-                </StatNumber>
-                <StatHelpText>
-                    <StatUpArrow/>
-                    14.00%
-                </StatHelpText>
-            </Stat>
-            <Stat>
-                <StatLabel>
-                    Выручка
-                </StatLabel>
-                <StatNumber>
-                    10
-                </StatNumber>
-                <StatHelpText>
-                    <StatUpArrow/>
-                    14.00%
-                </StatHelpText>
-            </Stat>
-            <Stat>
-                <StatLabel>
-                    Средняя продолжительность аренды
-                </StatLabel>
-                <StatNumber>
-                    89 мин
-                </StatNumber>
-                <StatHelpText>
-                    <StatDownArrow/>
-                    3.02%
-                </StatHelpText>
-            </Stat>
-            <Stat>
-                <StatLabel>
-                    Среднее кол-во аренд
-                </StatLabel>
-                <StatNumber>
-                    1
-                </StatNumber>
-                <StatHelpText>
-                    <StatArrow direction='u'/>
-                    0.00%
-                </StatHelpText>
-            </Stat>
-        </SimpleGrid>
+       <Skeleton isLoaded={!loading}>
+           <SimpleGrid columns={[6,4,2,null]} w='100%' spacing={2}>
+               <Stat>
+                   <StatLabel>
+                       Поездок
+                   </StatLabel>
+                   <StatNumber>
+                       {stat?.travels?.value}
+                   </StatNumber>
+                   <StatHelpText>
+                       <StatUpArrow/>
+                       {stat?.travels?.diff}
+                   </StatHelpText>
+               </Stat>
+               <Stat>
+                   <StatLabel>
+                       Выручка
+                   </StatLabel>
+                   <StatNumber>
+                       0
+                   </StatNumber>
+                   <StatHelpText>
+                       <StatUpArrow/>
+                       0.00%
+                   </StatHelpText>
+               </Stat>
+               <Stat>
+                   <StatLabel>
+                       Средняя продолжительность аренды
+                   </StatLabel>
+                   <StatNumber>
+                       {stat?.averageDuration?.value}
+                   </StatNumber>
+                   <StatHelpText>
+                       <StatDownArrow/>
+                       {stat?.averageDuration?.diff}
+                   </StatHelpText>
+               </Stat>
+               <Stat>
+                   <StatLabel>
+                       Среднее кол-во аренд
+                   </StatLabel>
+                   <StatNumber>
+                       1
+                   </StatNumber>
+                   <StatHelpText>
+                       <StatArrow direction='u'/>
+                       0.00%
+                   </StatHelpText>
+               </Stat>
+           </SimpleGrid>
+       </Skeleton>
     )
 }
 
@@ -210,6 +303,7 @@ function MapPreviewBlock({center, zoom}) {
 
 function EventBlock() {
     let [events, setEvents] = useState([{
+        id: 135,
         time: new Date(),
         message: 'Состояние оборудования неизвестно более 30 минут',
         aggrId: 1
@@ -220,7 +314,7 @@ function EventBlock() {
             <HStack>
                 <Heading size='md'>События</Heading>
             </HStack>
-            {events.map(event => <EventRecord event={event}/>)}
+            {events.map(event => <EventRecord key={event.id} event={event}/>)}
         </Stack>
     )
 }

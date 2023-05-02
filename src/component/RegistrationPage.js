@@ -1,6 +1,10 @@
 import React, {useState} from "react";
 import {
-    Alert, AlertIcon,
+    Alert,
+    AlertDescription,
+    AlertIcon,
+    AlertTitle,
+    Box,
     Button,
     ButtonGroup,
     Center,
@@ -8,16 +12,22 @@ import {
     Input,
     InputGroup,
     InputLeftAddon,
+    Link,
     Skeleton,
     Stack,
     Text,
+    Textarea,
     useToast,
     VStack
 } from "@chakra-ui/react";
-import {companyService} from "../service/CompanyService";
 import {IoMdMail, IoMdPhonePortrait} from "react-icons/io";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../routes";
+import {organizationService} from "../service/OrganizationService.js";
+import isEmail from "validator/es/lib/isEmail.js";
+import isMobilePhone from "validator/es/lib/isMobilePhone.js";
+import isVAT from "validator/es/lib/isVAT.js";
+import {errorConverter} from "../error/ErrorConverter.js";
 
 
 export function RegistrationPage() {
@@ -41,12 +51,16 @@ export function RegistrationPage() {
 
     console.log(step)
 
-    return steps[step];
+    return (
+        <Box bgColor='green.50'>
+            {steps[step]}
+        </Box>
+    );
 }
 
 function RegPageStep0({onNext}) {
     return (
-        <Stack bgColor='green.50' minH='100vh'>
+        <Stack minH='100vh'>
             <Center minH='100vh'>
                 <VStack spacing={6} p={4}>
                     <Heading textAlign='center'>Стань частью прокат</Heading>
@@ -65,17 +79,15 @@ function RegPageStep1({onPrev, onNext, onLoadCompany}) {
 
     async function loadByInn() {
         try {
-            let company = await companyService.getByInn(inn)
+            let company = await organizationService.getByInn(inn);
+
             onLoadCompany(company)
-            if (onNext){
+
+            if (onNext) {
                 onNext()
             }
         } catch (e) {
-            console.log(e)
-            toast({
-                status: 'error',
-                title: 'Ошибка при сохранении ИНН'
-            })
+            toast(errorConverter.convertToToastBody(e))
         }
     }
 
@@ -87,7 +99,9 @@ function RegPageStep1({onPrev, onNext, onLoadCompany}) {
 
                     <InputGroup>
                         <InputLeftAddon children='ИНН'/>
-                        <Input value={inn} onChange={e=>setInn(e.target.value)}/>
+                        <Input value={inn}
+                               isInvalid={!isVAT(inn, 'RU')}
+                               onChange={e => setInn(e.target.value)}/>
                     </InputGroup>
 
 
@@ -95,7 +109,9 @@ function RegPageStep1({onPrev, onNext, onLoadCompany}) {
                         <Button onClick={onPrev}>
                             Назад
                         </Button>
-                        <Button colorScheme='green' onClick={loadByInn}>
+                        <Button colorScheme='green'
+                                isDisabled={!isVAT(inn, 'RU')}
+                                onClick={loadByInn}>
                             Далее
                         </Button>
                     </ButtonGroup>
@@ -112,16 +128,19 @@ function RegPageStep2({company, onChange, onPrev, onNext}) {
     async function onSubmit() {
         try {
             setLoading(true)
-            let createdCompany = await companyService.register(company)
+            let createdCompany = await organizationService.register(company)
             onChange(createdCompany);
-            if (onNext)
-                onNext()
-        } catch (e) {
-            console.log(e)
             toast({
-                status: 'error',
-                title: 'Ошибка создания организации'
+                status: "success",
+                title: 'Огранизация успешно зарегистровано',
+                description: `На почтовый адрес ${createdCompany.email} выслано приглашение`
             })
+            setTimeout(() => {
+                if (onNext)
+                    onNext()
+            }, 3000)
+        } catch (e) {
+            toast(errorConverter.convertToToastBody(e));
             setLoading(false)
         }
     }
@@ -139,7 +158,12 @@ function RegPageStep2({company, onChange, onPrev, onNext}) {
                             name: e.target.value
                         })}/>
                     </InputGroup>
-
+                    <InputGroup>
+                        <Textarea disabled={true} value={company.fullName} onChange={e => onChange({
+                            ...company,
+                            fullName: e.target.value
+                        })}/>
+                    </InputGroup>
                     <InputGroup>
                         <InputLeftAddon children='ИНН'/>
                         <Input disabled={true} value={company.inn} onChange={e => onChange({
@@ -147,10 +171,17 @@ function RegPageStep2({company, onChange, onPrev, onNext}) {
                             inn: e.target.value
                         })}/>
                     </InputGroup>
-
+                    <InputGroup>
+                        <InputLeftAddon children='КПП'/>
+                        <Input disabled={true} value={company.kpp} onChange={e => onChange({
+                            ...company,
+                            kpp: e.target.value
+                        })}/>
+                    </InputGroup>
                     <InputGroup>
                         <InputLeftAddon children={<IoMdPhonePortrait/>}/>
                         <Input value={company.tel}
+                               isInvalid={!isMobilePhone(company.tel ?? '', 'ru-RU')}
                                placeholder='79871234567'
                                onChange={e => onChange({
                                    ...company,
@@ -161,6 +192,7 @@ function RegPageStep2({company, onChange, onPrev, onNext}) {
                     <InputGroup>
                         <InputLeftAddon children={<IoMdMail/>}/>
                         <Input value={company.email}
+                               isInvalid={!isEmail(company.email ?? '')}
                                placeholder='mail@mail.com'
                                onChange={e => onChange({
                                    ...company,
@@ -174,6 +206,10 @@ function RegPageStep2({company, onChange, onPrev, onNext}) {
                                 Назад
                             </Button>
                             <Button colorScheme='green'
+                                    isDisabled={
+                                        !isEmail(company.email ?? '')
+                                        || !isMobilePhone(company.tel ?? '', 'ru-RU')
+                                    }
                                     onClick={onSubmit}>
                                 Готово
                             </Button>
@@ -185,7 +221,7 @@ function RegPageStep2({company, onChange, onPrev, onNext}) {
     )
 }
 
-function RegPageStep3() {
+function RegPageStep3({company}) {
     let navigate = useNavigate();
 
 
@@ -193,19 +229,32 @@ function RegPageStep3() {
         <Stack bgColor='green.50' minH='100vh'>
             <Center minH='100vh'>
                 <VStack spacing={6} p={4}>
-                    <Heading textAlign='center'>
-                        Личный кабинет создан
-                    </Heading>
-                    <Text textAlign='center'>
-                        При первой аунтентфикации потребуется ввести адрес электронной почты
-                    </Text>
-                    <Alert variant='info'>
-                        <AlertIcon/>
-                        Для отображения компании на площадке система отправлена на верификацию
+                    <Alert
+                        status='success'
+                        variant='subtle'
+                        flexDirection='column'
+                        alignItems='center'
+                        justifyContent='center'
+                        textAlign='center'
+                        height='200px'
+                        rounded={10}
+                    >
+                        <AlertIcon boxSize='40px' mr={0} />
+                        <AlertTitle mt={4} mb={1} fontSize='lg'>
+                            На почтовый адрес {company.email} выслано приглашение.
+                        </AlertTitle>
+                        <AlertDescription maxWidth='md'>
+                            <VStack>
+                                <Text>
+                                    Приглашение действительно 15 минут.
+                                    По истечению указанного срока потребуется выполнить процедуру сброса пароля
+                                </Text>
+                                <Link href={routes.signin} textDecor='underline'>
+                                    На страницу авторизации
+                                </Link>
+                            </VStack>
+                        </AlertDescription>
                     </Alert>
-                    <Button colorScheme='green' onClick={()=>navigate(routes.home)}>
-                        Перейти в личный кабинет
-                    </Button>
                 </VStack>
             </Center>
         </Stack>
