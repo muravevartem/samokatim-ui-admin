@@ -16,13 +16,13 @@ import {
     Tr,
     useToast
 } from "@chakra-ui/react";
-import {equipmentService} from "../../service/EquipmentService.js";
 import {errorConverter} from "../../error/ErrorConverter.js";
 import moment from "moment";
 import {IoMdArrowBack, IoMdArrowDown, IoMdArrowForward, IoMdArrowUp, IoMdEye, IoMdRemove} from "react-icons/io";
 import {MainHeader} from "../components.js";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../../routes.js";
+import {employeeService} from "../../service/EmployeeService.js";
 
 
 function ButtonSort({fieldName, onClick, defaultDirection}) {
@@ -62,7 +62,7 @@ function ButtonSort({fieldName, onClick, defaultDirection}) {
 
 }
 
-export function InventoryPage() {
+export function EmployeePage() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState({number: 0})
     const [pageable, setPageable] = useState({page: 0, size: 5})
@@ -80,7 +80,7 @@ export function InventoryPage() {
             setLoading(true);
             let joinedAsc = 'sort=' + sort.asc.join(',') + ',asc';
             let joinedDesc = 'sort=' + sort.desc.join(',') + ',desc';
-            let loadedData = await equipmentService.getAllMy({
+            let loadedData = await employeeService.getAllColleague("",false,{
                 page: pageable.page,
                 size: pageable.size,
                 sort: [joinedAsc, joinedDesc].join('&')

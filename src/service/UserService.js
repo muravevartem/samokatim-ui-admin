@@ -4,7 +4,7 @@ import {$api} from "../http.js";
 class UserService {
     constructor() {
         this.token = localStorage.getItem('token');
-        eventService.subscribe(events.error403, () => {
+        eventService.subscribe(events.error401, () => {
             localStorage.removeItem('token');
             this.token = null
         })

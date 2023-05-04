@@ -20,8 +20,8 @@ let onFulfilledResponse = function (r) {
     return r;
 };
 let onRejectedResponse = function (error) {
-    if (error.response.status === 403)
-        eventService.raise(events.error403);
+    if (error.response.status === 401)
+        eventService.raise(events.error401);
     throw error;
 };
 

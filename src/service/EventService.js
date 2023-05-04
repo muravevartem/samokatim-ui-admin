@@ -23,7 +23,7 @@ export const events = {
     error: 'error',
     searchFocus: 'search-focus',
     searchBlur: 'search-focus',
-    error403: 'error-403',
+    error401: 'error-401',
     updatedUserName: 'updated-user-name',
     moveMap: 'move-map',
     newEquipmentLocations: 'new-equipment-locations',

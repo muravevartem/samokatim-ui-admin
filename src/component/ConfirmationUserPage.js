@@ -7,7 +7,9 @@ import {
     Center,
     Collapse,
     Divider,
-    Heading,
+    FormControl,
+    FormHelperText,
+    FormLabel,
     HStack,
     PinInput,
     PinInputField,
@@ -70,54 +72,56 @@ export function ConfirmationUserPage() {
                 </Text>
                 <div style={{height: 30}}/>
                 <Stack>
-                    <Heading size='sm'>
-                        Укажите код подтверждения
-                    </Heading>
-                    <HStack>
-                        <PinInput type='alphanumeric'
-                                  onChange={code => setState({
-                                      ...state,
-                                      code: code
-                                  })}
-                                  value={state.code}>
-                            <PinInputField/>
-                            <PinInputField/>
-                            <PinInputField/>
-                            <PinInputField/>
-                            <PinInputField/>
-                            <PinInputField/>
-                            <PinInputField/>
-                            <PinInputField/>
-                        </PinInput>
-                    </HStack>
+                    <FormControl>
+                        <FormLabel>Код подтверждения</FormLabel>
+                        <HStack>
+                            <PinInput type='alphanumeric'
+                                      onChange={code => setState({
+                                          ...state,
+                                          code: code
+                                      })}
+                                      value={state.code}>
+                                <PinInputField/>
+                                <PinInputField/>
+                                <PinInputField/>
+                                <PinInputField/>
+                                <PinInputField/>
+                                <PinInputField/>
+                                <PinInputField/>
+                                <PinInputField/>
+                            </PinInput>
+                        </HStack>
+                    </FormControl>
                 </Stack>
                 <Collapse in={state.code.length === 8} animateOpacity>
                     <Stack w='100%'>
-                        <Heading size='sm'>
-                            Введите новый пароль
-                        </Heading>
-                        <InputPassword
-                            onlyHidden
-                            value={state.password}
-                            onChange={e => setState({
-                                ...state,
-                                password: e.target.value
-                            })}
-                            isInvalid={state.password < 6}
-                        />
+                        <FormControl>
+                            <FormLabel>Введите новый пароль</FormLabel>
+                            <InputPassword
+                                onlyHidden
+                                value={state.password}
+                                onChange={e => setState({
+                                    ...state,
+                                    password: e.target.value
+                                })}
+                                isInvalid={state.password < 6}
+                            />
+                            <FormHelperText >Длина не менее 6 символов</FormHelperText>
+                        </FormControl>
+
                         <Divider/>
-                        <Heading size='sm'>
-                            Повторите пароль
-                        </Heading>
-                        <InputPassword
-                            onlyHidden
-                            value={state.confirmPassword}
-                            onChange={e => setState({
-                                ...state,
-                                confirmPassword: e.target.value
-                            })}
-                            isInvalid={state.confirmPassword !== state.password}
-                        />
+                        <FormControl>
+                            <FormLabel>Повторите пароль</FormLabel>
+                            <InputPassword
+                                onlyHidden
+                                value={state.confirmPassword}
+                                onChange={e => setState({
+                                    ...state,
+                                    confirmPassword: e.target.value
+                                })}
+                                isInvalid={state.confirmPassword !== state.password}
+                            />
+                        </FormControl>
                         <div style={{height: 30}}/>
                         <Skeleton isLoaded={!loading}>
                             <HStack justifyContent='center'>

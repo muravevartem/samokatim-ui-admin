@@ -6,9 +6,10 @@ import {RegistrationPage} from "./component/RegistrationPage";
 import SecuredPage from "./component/SecuredPage.js";
 import {SiginPage} from "./component/SiginPage.js";
 import {InventoryPage} from "./component/inventory/InventoryPage.js";
-import {OneInventoryPage} from "./component/inventory/OneInventoryPage.js";
-import {NotFoundPage} from "./component/components.js";
 import {ConfirmationUserPage} from "./component/ConfirmationUserPage.js";
+import {InventoryRegistrationPage} from "./component/inventory/InventoryRegistrationPage.js";
+import {InventoryOnePage} from "./component/inventory/InventoryOnePage.js";
+import {EmployeePage} from "./component/employees/EmployeePage.js";
 
 export const routes = {
     root: '/',
@@ -28,7 +29,7 @@ export const routes = {
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route path={routes.root} element={<Root/>} errorElement={<NotFoundPage/>}>
+        <Route path={routes.root} element={<Root/>}>
             <Route path=''
                    element={
                        <Navigate to={routes.home}/>
@@ -58,16 +59,24 @@ export const router = createBrowserRouter(
                        </SecuredPage>
                    }
             />
-            <Route path={`${routes.inventories}/:id`}
-                   element={
-                       <SecuredPage>
-                           <OneInventoryPage/>
-                       </SecuredPage>
-                   }
-            />
             <Route path={`${routes.confirmationUser}/:id`}
                    element={
                        <ConfirmationUserPage/>
+                   }
+            />
+            <Route path={`${routes.inventories}/new`}
+                   element={
+                       <InventoryRegistrationPage/>
+                   }
+            />
+            <Route path={`${routes.inventories}/:id`}
+                   element={
+                       <InventoryOnePage/>
+                   }
+            />
+            <Route path={routes.employees}
+                   element={
+                       <EmployeePage/>
                    }
             />
         </Route>
