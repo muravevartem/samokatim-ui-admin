@@ -10,25 +10,25 @@ import {
     Button,
     Center,
     Divider,
-    Heading,
+    FormControl,
+    FormLabel,
     HStack,
-    IconButton,
     Input,
     InputGroup,
     InputLeftAddon,
-    InputRightElement,
     Link,
     Stack,
     Text,
     useToast
 } from "@chakra-ui/react";
-import {IoMdEye, IoMdEyeOff, IoMdKey, IoMdMail} from "react-icons/io";
+import {IoMdMail} from "react-icons/io";
 import isEmail from "validator/es/lib/isEmail.js";
 import {userService} from "../service/UserService.js";
 import {errorConverter} from "../error/ErrorConverter.js";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../routes.js";
 import {DEFAULT_EMAIL} from "./util.js";
+import {InputPassword} from "./components.js";
 
 export function SiginPage() {
     const [state, setState] = useState({
@@ -74,40 +74,58 @@ export function SiginPage() {
             <Stack spacing={5}>
                 <ResetPasswordDialog isOpen={isOpenResetPassword}
                                      onClose={() => setOpenResetPassword(false)}/>
-                <Heading textAlign='center'>Самокатим.Бизнес</Heading>
-                <InputGroup>
-                    <InputLeftAddon>
-                        <IoMdMail/>
-                    </InputLeftAddon>
-                    <Input placeholder={DEFAULT_EMAIL}
-                           isInvalid={state.username !== '' && !isEmail(state.username)}
-                           value={state.username}
-                           onChange={e => setState({...state, username: e.target.value})}
-                    />
-                </InputGroup>
-                <InputGroup>
-                    <InputLeftAddon>
-                        <IoMdKey/>
-                    </InputLeftAddon>
-                    <Input type={state.showPass ? 'text' : 'password'}
-                           isInvalid={state.password !== '' && state.password.length < 6}
-                           value={state.password}
-                           onChange={e => setState({...state, password: e.target.value})}
-                    />
-                    <InputRightElement>
-                        <IconButton aria-label='show password'
-                                    onClick={() => setState({...state, showPass: !state.showPass})}
-                                    icon={state.showPass ? <IoMdEye/> : <IoMdEyeOff/>}
+                <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                      bgClip='text'
+                      p={2}
+                      fontSize="4xl"
+                      textAlign='center'
+                      fontWeight="extrabold">
+                    Самокатим.Бизнес
+                </Text>
+                <FormControl>
+                    <FormLabel>
+                        <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                              bgClip='text'
+                              fontSize="md"
+                              fontWeight="extrabold">
+                            Адрес электронной почты
+                        </Text>
+                    </FormLabel>
+                    <InputGroup>
+                        <Input placeholder={DEFAULT_EMAIL}
+                               fontWeight='bold'
+                               isInvalid={state.username !== '' && !isEmail(state.username)}
+                               value={state.username}
+                               onChange={e => setState({...state, username: e.target.value})}
                         />
-                    </InputRightElement>
-                </InputGroup>
+                    </InputGroup>
+                </FormControl>
+                <FormControl>
+                    <FormLabel>
+                        <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                              bgClip='text'
+                              fontSize="md"
+                              fontWeight="extrabold">
+                            Пароль
+                        </Text>
+                    </FormLabel>
+                    <InputGroup>
+                        <InputPassword
+                            placeholder='*******'
+                            value={state.password}
+                            onChange={e => setState({
+                                ...state,
+                                password: e.target.value
+                            })}/>
+                    </InputGroup>
+                </FormControl>
                 <Divider/>
-                <Button colorScheme='green' onClick={login}>
+                <Button colorScheme='brand' onClick={login}>
                     Войти
                 </Button>
                 <HStack justifyContent='center'>
                     <Link href={routes.creation}
-                          color='green'
+                          color='brand'
                           fontWeight='bolder'>
                         Зарегистрироваться
                     </Link>

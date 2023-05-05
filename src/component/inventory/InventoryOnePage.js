@@ -99,6 +99,8 @@ export function InventoryOnePage() {
             </HStack>
             <SimpleGrid columns={[null, 2, 3]} gap={4}>
                 <Field name='Владелец'
+                       copyValue={inventory.organization.inn}
+                       copyText={`ИНН организации скопирован`}
                        fieldValue={`${inventory.organization.name}`}
                 />
                 <Field name='Модель'
@@ -189,7 +191,7 @@ function ModificationStatusBlock({inventory, isOpen, onClose, onUpdate}) {
                                 isDisabled={loading}>
                             Отмена
                         </Button>
-                        <Button colorScheme='red'
+                        <Button colorScheme='brand'
                                 isDisabled={loading}
                                 onClick={updateStatus}
                                 ml={3}>
@@ -227,11 +229,9 @@ function InventoryEventBlock({inventory}) {
 }
 
 
-function Field({
-                   name, fieldValue, onClick
-               }) {
+function Field({name, fieldValue, copyValue, onClick, copyText}) {
 
-    const {onCopy, hasCopied, value, setValue} = useClipboard(fieldValue);
+    const {onCopy, hasCopied, value, setValue} = useClipboard(copyValue ? copyValue : fieldValue);
 
     let toast = useToast();
 
@@ -254,12 +254,12 @@ function Field({
                          onCopy()
                          toast({
                              status: 'success',
-                             title: 'Скопировано'
+                             title: copyText ? copyText : 'Скопировано'
                          })
                      }
                  }}
                  fontWeight="extrabold">
-                {value}
+                {fieldValue}
             </Tag>
         </FormControl>
     )
@@ -288,10 +288,37 @@ function InventoryLocation({inventory}) {
                 </MapContainer>
             </Stack>
         )
+    if (inventory.supportsTelemetry)
+        return (
+            <Center padding={4}>
+                <Alert
+                    status='warning'
+                    variant='subtle'
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    textAlign='center'
+                    height='200px'
+                    rounded={10}
+                >
+                    <AlertIcon boxSize='40px' mr={0}/>
+                    <AlertTitle mt={4} mb={1} fontSize='lg'>
+                        Отсутствуют метрики с оборудования {inventory.alias}
+                    </AlertTitle>
+                    <AlertDescription maxWidth='md'>
+                        <VStack>
+                            <Text>
+                                Возможно оборудование ещё не инициализировало модуль телеметрии
+                            </Text>
+                        </VStack>
+                    </AlertDescription>
+                </Alert>
+            </Center>
+        )
     return (
         <Center padding={4}>
             <Alert
-                status='warning'
+                status='info'
                 variant='subtle'
                 flexDirection='column'
                 alignItems='center'
@@ -300,14 +327,14 @@ function InventoryLocation({inventory}) {
                 height='200px'
                 rounded={10}
             >
-                <AlertIcon boxSize='40px' mr={0} />
+                <AlertIcon boxSize='40px' mr={0}/>
                 <AlertTitle mt={4} mb={1} fontSize='lg'>
                     Отсутствуют метрики с оборудования {inventory.alias}
                 </AlertTitle>
                 <AlertDescription maxWidth='md'>
                     <VStack>
                         <Text>
-                            Возможно оборудование ещё не инициализировало модуль телеметрии
+                            Оборудование не поддерживает сбор и отправку телеметрии
                         </Text>
                     </VStack>
                 </AlertDescription>

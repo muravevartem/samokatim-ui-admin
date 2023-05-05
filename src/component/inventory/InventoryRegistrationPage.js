@@ -11,6 +11,7 @@ import {
     Input,
     Select,
     Spinner,
+    Switch,
     Tag,
     Text,
     useToast,
@@ -27,7 +28,7 @@ export function InventoryRegistrationPage() {
     const [step, setStep] = useState(0)
     const [inventory, setInventory] = useState({
         alias: '',
-        inventoryClass: 'STANDART',
+        inventoryClass: 'STANDARD',
         model: {}
     })
     const [loading, setLoading] = useState(false);
@@ -59,9 +60,14 @@ export function InventoryRegistrationPage() {
 
     const steps = [
         (<Step1 onPrev={onCancel} onNext={onNext}/>),
-        (<Step2 onPrev={onPrev} onNext={onNext} value={inventory.model} onChange={model => setInventory({...inventory, model: model})}/>),
-        (<Step3 onPrev={onPrev} onNext={onNext} onChange={value => setInventory({...inventory, inventoryClass: value})}/>),
-        (<Step4 onPrev={onPrev} onNext={onNext} value={inventory.alias} onChange={value => setInventory({...inventory, alias: value})}/>),
+        (<Step2 onPrev={onPrev} onNext={onNext} value={inventory.model}
+                onChange={model => setInventory({...inventory, model: model})}/>),
+        (<Step3 onPrev={onPrev} onNext={onNext}
+                onChange={value => setInventory({...inventory, inventoryClass: value})}/>),
+        (<Step4 onPrev={onPrev} onNext={onNext} value={inventory.alias}
+                onChange={value => setInventory({...inventory, alias: value})}/>),
+        (<SupportesTelemetry onPrev={onPrev} onNext={onNext} value={inventory.supportsTelemetry??false}
+                             onChange={value => setInventory({...inventory, supportsTelemetry: value})}/>),
         (<Step5 onPrev={onPrev} onNext={onCreate} value={inventory}/>)
     ]
 
@@ -97,7 +103,7 @@ function Step1({onPrev, onNext}) {
                     Отмена
                 </Button>
                 <Button size='lg'
-                        colorScheme='pink'
+                        colorScheme='brand'
                         onClick={onNext}>
                     Начать
                 </Button>
@@ -122,7 +128,7 @@ function Step2({onPrev, onNext, value, onChange}) {
                 <Button onClick={onPrev}>
                     Назад
                 </Button>
-                <Button colorScheme='pink'
+                <Button colorScheme='brand'
                         isDisabled={!value?.id}
                         onClick={onNext}>
                     Далее
@@ -151,7 +157,7 @@ function Step3({onPrev, onNext, value, onChange}) {
                 <Button onClick={onPrev}>
                     Назад
                 </Button>
-                <Button colorScheme='pink'
+                <Button colorScheme='brand'
                         onClick={onNext}>
                     Далее
                 </Button>
@@ -181,8 +187,40 @@ function Step4({onPrev, onNext, value, onChange}) {
                 <Button onClick={onPrev}>
                     Назад
                 </Button>
-                <Button colorScheme='pink'
+                <Button colorScheme='brand'
                         isDisabled={value.length < 4}
+                        onClick={onNext}>
+                    Далее
+                </Button>
+            </HStack>
+        </VStack>
+    )
+}
+
+function SupportesTelemetry({onPrev, onNext, value, onChange}) {
+    console.log(value)
+    return (
+        <VStack p={10} spacing={5}>
+            <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                  bgClip="text"
+                  fontSize="3xl"
+                  textAlign='center'
+                  fontWeight="extrabold">
+                {value ? 'Поддерживает сбор и отправку телеметрии' : 'Не поддерживает сбор и отправку телеметрии'}
+            </Text>
+            <FormControl>
+                <VStack>
+                    <Switch size='lg' colorScheme='brand' checked={value} onChange={e => onChange(e.target.checked)}/>
+                    <FormHelperText>
+                        Отправка телеметрии посредством протокола MQTT
+                    </FormHelperText>
+                </VStack>
+            </FormControl>
+            <HStack justifyContent='center'>
+                <Button onClick={onPrev}>
+                    Назад
+                </Button>
+                <Button colorScheme='brand'
                         onClick={onNext}>
                     Далее
                 </Button>
@@ -194,7 +232,7 @@ function Step4({onPrev, onNext, value, onChange}) {
 function Step5({onPrev, onNext, value}) {
     return (
         <VStack p={10} spacing={5}>
-            <Text color="pink.500"
+            <Text color="brand.500"
                   fontSize="3xl"
                   textAlign='center'
                   fontWeight="extrabold">
@@ -202,24 +240,24 @@ function Step5({onPrev, onNext, value}) {
             </Text>
             <Divider/>
             <HStack alignItems='end'>
-                <Text color='pink.500'
+                <Text color='brand.500'
+                      p={2}
+                      fontSize="xl"
+                      textAlign='center'
+                      fontWeight="extrabold">
+                    Название
+                </Text>
+                <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
+                     color='white'
                      p={2}
                      fontSize="xl"
                      textAlign='center'
                      fontWeight="extrabold">
-                    Название
-                </Text>
-                <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
-                      color='white'
-                     p={2}
-                      fontSize="xl"
-                      textAlign='center'
-                      fontWeight="extrabold">
                     {value.alias}
                 </Tag>
             </HStack>
             <HStack alignItems='end'>
-                <Text color='pink.500'
+                <Text color='brand.500'
                       p={2}
                       fontSize="xl"
                       textAlign='center'
@@ -236,7 +274,7 @@ function Step5({onPrev, onNext, value}) {
                 </Tag>
             </HStack>
             <HStack alignItems='end'>
-                <Text color='pink.500'
+                <Text color='brand.500'
                       p={2}
                       fontSize="xl"
                       textAlign='center'
@@ -252,12 +290,29 @@ function Step5({onPrev, onNext, value}) {
                     {beautifulInventoryClass(value.inventoryClass)}
                 </Tag>
             </HStack>
+            <HStack alignItems='end'>
+                <Text color='brand.500'
+                      p={2}
+                      fontSize="xl"
+                      textAlign='center'
+                      fontWeight="extrabold">
+                    Поддержка телеметрии
+                </Text>
+                <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
+                     color='white'
+                     p={2}
+                     fontSize="xl"
+                     textAlign='center'
+                     fontWeight="extrabold">
+                    {value.supportsTelemetry ? 'Да' : 'Нет'}
+                </Tag>
+            </HStack>
             <Divider/>
             <ButtonGroup>
                 <Button onClick={onPrev}>
                     Назад
                 </Button>
-                <Button colorScheme='pink' onClick={onNext}>
+                <Button colorScheme='brand' onClick={onNext}>
                     Создать
                 </Button>
             </ButtonGroup>
@@ -267,7 +322,7 @@ function Step5({onPrev, onNext, value}) {
 
 
 function beautifulInventoryClass(value) {
-    if (value === 'STANDART')
+    if (value === 'STANDARD')
         return 'Стандартный'
     if (value === 'VANDAL_RESISTANT')
         return 'Вандалозащищенный'

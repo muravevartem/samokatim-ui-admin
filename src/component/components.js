@@ -44,13 +44,13 @@ export function InputPassword(props) {
 
     return (
         <InputGroup>
-            <InputLeftAddon>
-                <IoMdKey/>
-            </InputLeftAddon>
+            {props.showLeftAddons &&
+                <InputLeftAddon>
+                    <IoMdKey/>
+                </InputLeftAddon>
+            }
             <Input type={isHidden ? 'password' : 'text'}
-                   isInvalid={props.isInvalid}
-                   value={props.value}
-                   onChange={props.onChange}
+                   {...props}
             />
             {!props.onlyHidden &&
                 <InputRightElement>

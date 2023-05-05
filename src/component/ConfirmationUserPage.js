@@ -65,7 +65,7 @@ export function ConfirmationUserPage() {
             <VStack spacing={4}>
                 <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
                       bgClip="text"
-                      fontSize="3xl"
+                      fontSize="4xl"
                       textAlign='center'
                       fontWeight="extrabold">
                     Изменение пароля
@@ -73,9 +73,17 @@ export function ConfirmationUserPage() {
                 <div style={{height: 30}}/>
                 <Stack>
                     <FormControl>
-                        <FormLabel>Код подтверждения</FormLabel>
+                        <FormLabel>
+                            <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                                  bgClip='text'
+                                  fontSize="md"
+                                  fontWeight="extrabold">
+                                Код подтверждения
+                            </Text>
+                        </FormLabel>
                         <HStack>
                             <PinInput type='alphanumeric'
+                                      colorScheme='brand'
                                       onChange={code => setState({
                                           ...state,
                                           code: code
@@ -92,55 +100,73 @@ export function ConfirmationUserPage() {
                             </PinInput>
                         </HStack>
                     </FormControl>
-                </Stack>
-                <Collapse in={state.code.length === 8} animateOpacity>
-                    <Stack w='100%'>
-                        <FormControl>
-                            <FormLabel>Введите новый пароль</FormLabel>
-                            <InputPassword
-                                onlyHidden
-                                value={state.password}
-                                onChange={e => setState({
-                                    ...state,
-                                    password: e.target.value
-                                })}
-                                isInvalid={state.password < 6}
-                            />
-                            <FormHelperText >Длина не менее 6 символов</FormHelperText>
-                        </FormControl>
+                    <Collapse in={state.code.length === 8} animateOpacity>
+                        <Stack w='100%'>
+                            <FormControl>
+                                <FormLabel>
+                                    <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                                          bgClip='text'
+                                          fontSize="md"
+                                          fontWeight="extrabold">
+                                        Введите новый пароль
+                                    </Text>
+                                </FormLabel>
+                                <InputPassword
+                                    placeholder='*******'
+                                    onlyHidden
+                                    value={state.password}
+                                    onChange={e => setState({
+                                        ...state,
+                                        password: e.target.value
+                                    })}
+                                    isInvalid={state.password !== '' && state.password < 6}
+                                />
+                                <FormHelperText >Длина не менее 6 символов</FormHelperText>
+                            </FormControl>
 
-                        <Divider/>
-                        <FormControl>
-                            <FormLabel>Повторите пароль</FormLabel>
-                            <InputPassword
-                                onlyHidden
-                                value={state.confirmPassword}
-                                onChange={e => setState({
-                                    ...state,
-                                    confirmPassword: e.target.value
-                                })}
-                                isInvalid={state.confirmPassword !== state.password}
-                            />
-                        </FormControl>
-                        <div style={{height: 30}}/>
-                        <Skeleton isLoaded={!loading}>
-                            <HStack justifyContent='center'>
-                                <Button onClick={() => navigate(routes.signin)}>
-                                    Отмена
-                                </Button>
-                                <Button colorScheme='blue'
-                                        isDisabled={
-                                            state.password.length < 6
-                                            || state.confirmPassword !== state.password
-                                            || state.code.length !== 8
-                                        }
-                                        onClick={setNewPassword}>
-                                    Изменить
-                                </Button>
-                            </HStack>
-                        </Skeleton>
-                    </Stack>
-                </Collapse>
+                            <Divider/>
+                            <FormControl>
+                                <FormLabel>
+                                    <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                                          bgClip='text'
+                                          fontSize="md"
+                                          fontWeight="extrabold">
+                                        Повторите пароль
+                                    </Text>
+                                </FormLabel>
+                                <InputPassword
+                                    placeholder='*******'
+                                    onlyHidden
+                                    value={state.confirmPassword}
+                                    onChange={e => setState({
+                                        ...state,
+                                        confirmPassword: e.target.value
+                                    })}
+                                    isInvalid={state.confirmPassword !== '' && state.confirmPassword !== state.password}
+                                />
+                                <FormHelperText >Пароль должен совпадать с ранее введенным</FormHelperText>
+                            </FormControl>
+                            <div style={{height: 30}}/>
+                            <Skeleton isLoaded={!loading}>
+                                <HStack justifyContent='center'>
+                                    <Button onClick={() => navigate(routes.signin)}>
+                                        Отмена
+                                    </Button>
+                                    <Button colorScheme='brand'
+                                            isDisabled={
+                                                state.password.length < 6
+                                                || state.confirmPassword !== state.password
+                                                || state.code.length !== 8
+                                            }
+                                            onClick={setNewPassword}>
+                                        Изменить
+                                    </Button>
+                                </HStack>
+                            </Skeleton>
+                        </Stack>
+                    </Collapse>
+                </Stack>
+
             </VStack>
         </Center>
     )
