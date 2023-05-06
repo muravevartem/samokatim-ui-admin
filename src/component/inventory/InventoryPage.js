@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
     Button,
-    Center,
-    Heading,
     HStack,
     IconButton,
     Skeleton,
@@ -11,6 +9,7 @@ import {
     TableContainer,
     Tbody,
     Td,
+    Text,
     Th,
     Thead,
     Tr,
@@ -19,8 +18,7 @@ import {
 import {equipmentService} from "../../service/EquipmentService.js";
 import {errorConverter} from "../../error/ErrorConverter.js";
 import moment from "moment";
-import {IoMdArrowBack, IoMdArrowDown, IoMdArrowForward, IoMdArrowUp, IoMdEye, IoMdRemove} from "react-icons/io";
-import {MainHeader} from "../components.js";
+import {IoMdArrowBack, IoMdArrowDown, IoMdArrowForward, IoMdArrowUp, IoMdEye} from "react-icons/io";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../../routes.js";
 
@@ -125,80 +123,80 @@ export function InventoryPage() {
 
     return (
        <Stack>
-           <MainHeader fixed/>
-           <Center minH='100vh'>
-               <Stack maxW={1300} w='100%'>
-                   <Stack p={10} paddingTop={50}>
-                       <HStack justifyContent='space-between'>
-                           <Heading>Оборудование</Heading>
-                           <Button colorScheme='green'
-                                   onClick={() => navigate(`${routes.inventories}/new`)}>
-                               Добавить оборудование
-                           </Button>
-                       </HStack>
-                   </Stack>
-                   <TableContainer minH='75vh'>
-                       <Table variant='unstyled'>
-                           <Thead>
-                               <Tr>
-                                   <Th textAlign='center'>
-                                       ID
-                                       <ButtonSort fieldName='id'
-                                                   defaultDirection='asc'
-                                                   onClick={changeSort}/>
-                                   </Th>
-                                   <Th textAlign='center'>
-                                       Название
-                                       <ButtonSort fieldName='name'
-                                                   onClick={changeSort}/>
-                                   </Th>
-                                   <Th textAlign='center'>
-                                       Дата регистрации
-                                       <ButtonSort fieldName='createdAt'
-                                                   onClick={changeSort}/>
-                                   </Th>
-                                   <Th textAlign='center'>
-                                       Действие
-                                   </Th>
-                               </Tr>
-                           </Thead>
-                           <Tbody>
-                               {data?.content?.map(item => (
-                                   <Tr key={item.id}>
-                                       <Td textAlign='center'>{item.id}</Td>
-                                       <Td textAlign='center'>{item.alias}</Td>
-                                       <Td textAlign='center'>{moment(item.createdAt).format('lll')}</Td>
-                                       <HStack justifyContent='center'>
-                                           <IconButton aria-label='select'
-                                                       colorScheme='green'
-                                                       onClick={() => navigate(`${routes.inventories}/${item.id}`)}
-                                                       icon={<IoMdEye/>}
-                                                       size='sm'/>
-                                           <IconButton aria-label='delete'
-                                                       colorScheme='red'
-                                                       icon={<IoMdRemove/>}
-                                                       size='sm'/>
-                                       </HStack>
-                                   </Tr>
-                               ))}
-                           </Tbody>
-                       </Table>
-                   </TableContainer>
-                   <HStack justifyContent='center'>
-                       <IconButton icon={<IoMdArrowBack/>}
-                                   onClick={() => setPageable({...pageable, page: pageable.page - 1})}
-                                   isDisabled={data.first}/>
-                       <Button>
-                           <Skeleton isLoaded={!loading && !isNaN(data.number + 1)}>
-                               {data.number + 1}
-                           </Skeleton>
+           <Stack w='100%' p={4}>
+               <Stack>
+                   <HStack justifyContent='space-between'>
+                       <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                             bgClip='text'
+                             p={2}
+                             fontSize="4xl"
+                             textAlign='center'
+                             fontWeight="extrabold">
+                           Инвентарь
+                       </Text>
+                       <Button colorScheme='brand'
+                               onClick={() => navigate(`${routes.inventories}/new`)}>
+                           Добавить
                        </Button>
-                       <IconButton icon={<IoMdArrowForward/>}
-                                   onClick={() => setPageable({...pageable, page: pageable.page + 1})}
-                                   isDisabled={data.last}/>
                    </HStack>
                </Stack>
-           </Center>
+               <TableContainer minH='75vh'>
+                   <Table variant='unstyled'>
+                       <Thead>
+                           <Tr>
+                               <Th textAlign='center'>
+                                   ID
+                                   <ButtonSort fieldName='id'
+                                               defaultDirection='asc'
+                                               onClick={changeSort}/>
+                               </Th>
+                               <Th textAlign='center'>
+                                   Название
+                                   <ButtonSort fieldName='alias'
+                                               onClick={changeSort}/>
+                               </Th>
+                               <Th textAlign='center'>
+                                   Дата регистрации
+                                   <ButtonSort fieldName='createdAt'
+                                               onClick={changeSort}/>
+                               </Th>
+                               <Th textAlign='center'>
+                                   Действие
+                               </Th>
+                           </Tr>
+                       </Thead>
+                       <Tbody>
+                           {data?.content?.map(item => (
+                               <Tr key={item.id}>
+                                   <Td textAlign='center'>{item.id}</Td>
+                                   <Td textAlign='center'>{item.alias}</Td>
+                                   <Td textAlign='center'>{moment(item.createdAt).format('lll')}</Td>
+                                   <HStack justifyContent='center'>
+                                       <IconButton aria-label='select'
+                                                   colorScheme='brand'
+                                                   onClick={() => navigate(`${routes.inventories}/${item.id}`)}
+                                                   icon={<IoMdEye/>}
+                                                   size='sm'/>
+                                   </HStack>
+                               </Tr>
+                           ))}
+                       </Tbody>
+                   </Table>
+               </TableContainer>
+               <HStack justifyContent='center'>
+                   <IconButton icon={<IoMdArrowBack/>}
+                               onClick={() => setPageable({...pageable, page: pageable.page - 1})}
+                               isDisabled={data.first}/>
+                   <Button>
+                       <Skeleton isLoaded={!loading && !isNaN(data.number + 1)}>
+                           {data.number + 1}
+                       </Skeleton>
+                   </Button>
+                   <IconButton icon={<IoMdArrowForward/>}
+                               onClick={() => setPageable({...pageable, page: pageable.page + 1})}
+                               isDisabled={data.last}/>
+               </HStack>
+           </Stack>
        </Stack>
     )
 }

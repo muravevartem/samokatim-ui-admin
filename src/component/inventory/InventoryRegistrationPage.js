@@ -178,6 +178,7 @@ function Step4({onPrev, onNext, value, onChange}) {
             </Text>
             <FormControl>
                 <Input value={value}
+                       fontWeight='bolder'
                        onChange={e => onChange(e.target.value)}/>
                 <FormHelperText>
                     Минимум 4 символа
@@ -211,7 +212,7 @@ function SupportesTelemetry({onPrev, onNext, value, onChange}) {
             <FormControl>
                 <VStack>
                     <Switch size='lg' colorScheme='brand' checked={value} onChange={e => onChange(e.target.checked)}/>
-                    <FormHelperText>
+                    <FormHelperText textAlign='center'>
                         Отправка телеметрии посредством протокола MQTT
                     </FormHelperText>
                 </VStack>

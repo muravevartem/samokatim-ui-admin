@@ -20,10 +20,7 @@ import {
     SimpleGrid,
     Spinner,
     Stack,
-    Table,
-    TableContainer,
     Tag,
-    Tbody,
     Text,
     useClipboard,
     useToast,
@@ -31,26 +28,25 @@ import {
 } from "@chakra-ui/react";
 import {equipmentService} from "../../service/EquipmentService.js";
 import {errorConverter} from "../../error/ErrorConverter.js";
-import {EquipmentLogo} from "./InventoryModel.js";
 import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import moment from "moment";
 import {INVENTORY_ICON} from "../icons.js";
-import {inventoryStatus, toEventBlock} from "../../util.js";
-import {MainHeader} from "../components.js";
+import {inventoryStatus} from "../../util.js";
+import {IoMdHome} from "react-icons/io";
+import {officeService} from "../../service/OfficeService.js";
+import {OfficeScheduleComponent} from "./OfficeComponents.js";
 
-export function InventoryOnePage() {
+export function OfficeOnePage() {
     let {id} = useParams();
-    let [inventory, setInventory] = useState({});
+    let [data, setData] = useState({});
     let [loading, setLoading] = useState(true);
     let toast = useToast();
-
-    let [isOpenStatusChange, setOpenStatusChange] = useState(false);
 
     async function loadInventory() {
         try {
             setLoading(true)
-            let loaded = await equipmentService.getOne(id);
-            setInventory(loaded)
+            let loaded = await officeService.getOneMy(id);
+            setData(loaded)
         } catch (e) {
             toast(errorConverter.convertToToastBody(e))
         } finally {
@@ -72,7 +68,6 @@ export function InventoryOnePage() {
 
     return (
         <Stack p={5} divider={<Divider/>}>
-            <MainHeader fixed/>
             <HStack justifyContent='space-between'>
                 <HStack>
                     <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
@@ -83,7 +78,7 @@ export function InventoryOnePage() {
                           fontSize="xl"
                           textAlign='center'
                           fontWeight="extrabold">
-                        <EquipmentLogo type={inventory.model.type} size={72}/>
+                        <IoMdHome size={72}/>
                     </Text>
                     <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
                           bgClip='text'
@@ -91,56 +86,33 @@ export function InventoryOnePage() {
                           fontSize="6xl"
                           textAlign='center'
                           fontWeight="extrabold">
-                        {inventory.alias}
+                        {data.alias}
                     </Text>
                 </HStack>
-                {/*<IconButton aria-label='delete'*/}
-                {/*            size='sm'*/}
-                {/*            colorScheme='red'*/}
-                {/*            icon={<IoMdTrash/>}/>*/}
             </HStack>
             <SimpleGrid columns={[null, 2, 3]} gap={4}>
                 <Field name='Владелец'
-                       copyValue={inventory.organization.inn}
+                       copyValue={data.organization?.inn??''}
                        copyText={`ИНН организации скопирован`}
-                       fieldValue={`${inventory.organization.name}`}
-                />
-                <Field name='Модель'
-                       fieldValue={`${inventory.model.name}`}
+                       fieldValue={data.organization?.name??''}
                 />
                 <Field name='Индентификатор'
-                       fieldValue={`${inventory.id}`}
+                       fieldValue={`${data.id}`}
                 />
                 <Field name='Дата регистрации'
-                       fieldValue={moment(inventory.createdAt).format('LLL')}
+                       fieldValue={moment(data.createdAt).format('LLL')}
                 />
-                {inventory.lastMonitoringRecord &&
-                    <Field name='Последняя локация'
-                           fieldValue={`${inventory.lastMonitoringRecord.lat}, ${inventory.lastMonitoringRecord.lng}`}
-                    />
-                }
-                <Field name='Статус'
-                       onClick={() => {
-                           if (inventory.status === 'IN_WORK') {
-                               toast({
-                                   status: 'error',
-                                   title: 'Данное оборудование в аренде',
-                                   description: 'Повторите операцию после завершения аренды'
-                               })
-                           } else {
-                               setOpenStatusChange(true)
-                           }
-                       }}
-                       fieldValue={inventoryStatus[inventory.status]}
+                <Field name='Местоположение'
+                       fieldValue={`${data.lat}, ${data.lng}`}
                 />
-                <ModificationStatusBlock inventory={inventory} isOpen={isOpenStatusChange}
-                                         onClose={() => setOpenStatusChange(false)}
-                                         onUpdate={updated => setInventory(updated)}/>
+                <Field name='Адрес'
+                       fieldValue={data.address}
+                />
             </SimpleGrid>
             <Divider/>
-            <InventoryLocation inventory={inventory}/>
+            <OfficeLocation office={data}/>
             <Divider/>
-            <InventoryEventBlock inventory={inventory}/>
+            <OfficeSchedules value={data} onChange={setData}/>
         </Stack>
     )
 }
@@ -206,27 +178,23 @@ function ModificationStatusBlock({inventory, isOpen, onClose, onUpdate}) {
     )
 }
 
-function InventoryEventBlock({inventory}) {
-    const events = inventory.events;
-
+function OfficeSchedules({value, onChange}) {
     return (
-        <TableContainer>
-            <Stack>
-                <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                      bgClip='text'
-                      p={2}
-                      fontSize="3xl"
-                      textAlign='center'
-                      fontWeight="extrabold">
-                    События
-                </Text>
-            </Stack>
-            <Table variant='simple' size='sm'>
-                <Tbody>
-                    {events.map(event => toEventBlock(event))}
-                </Tbody>
-            < /Table>
-        </TableContainer>
+       <SimpleGrid minChildWidth={300} gap={4}>
+           {(value.schedules ?? []).map((item, index, array) =>
+               (<OfficeScheduleComponent
+                   key={index}
+                   value={item}
+                   onChange={e => {
+                       array[index] = e
+                       console.log(e)
+                       onChange({
+                           ...value,
+                           schedules: [...array]
+                       })
+                   }}
+               />))}
+       </SimpleGrid>
     )
 }
 
@@ -268,8 +236,8 @@ function Field({name, fieldValue, copyValue, onClick, copyText}) {
 }
 
 
-function InventoryLocation({inventory}) {
-    const record = inventory.lastMonitoringRecord;
+function OfficeLocation({office}) {
+    const record = office;
 
     if (record && record.lat && record.lng)
         return (
@@ -290,7 +258,7 @@ function InventoryLocation({inventory}) {
                 </MapContainer>
             </Stack>
         )
-    if (inventory.supportsTelemetry)
+    if (office.supportsTelemetry)
         return (
             <Center padding={4}>
                 <Alert
@@ -305,7 +273,7 @@ function InventoryLocation({inventory}) {
                 >
                     <AlertIcon boxSize='40px' mr={0}/>
                     <AlertTitle mt={4} mb={1} fontSize='lg'>
-                        Отсутствуют метрики с оборудования {inventory.alias}
+                        Отсутствуют метрики с оборудования {office.alias}
                     </AlertTitle>
                     <AlertDescription maxWidth='md'>
                         <VStack>
@@ -331,7 +299,7 @@ function InventoryLocation({inventory}) {
             >
                 <AlertIcon boxSize='40px' mr={0}/>
                 <AlertTitle mt={4} mb={1} fontSize='lg'>
-                    Отсутствуют метрики с оборудования {inventory.alias}
+                    Отсутствуют метрики с оборудования {office.alias}
                 </AlertTitle>
                 <AlertDescription maxWidth='md'>
                     <VStack>

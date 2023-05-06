@@ -10,6 +10,9 @@ import {ConfirmationUserPage} from "./component/ConfirmationUserPage.js";
 import {InventoryRegistrationPage} from "./component/inventory/InventoryRegistrationPage.js";
 import {InventoryOnePage} from "./component/inventory/InventoryOnePage.js";
 import {EmployeePage} from "./component/employees/EmployeePage.js";
+import {OfficeRegistrationPage} from "./component/rentalpoints/OfficeRegistrationPage.js";
+import {OfficePage} from "./component/rentalpoints/OfficePage.js";
+import {OfficeOnePage} from "./component/rentalpoints/OfficeOnePage.js";
 
 export const routes = {
     root: '/',
@@ -77,6 +80,21 @@ export const router = createBrowserRouter(
             <Route path={routes.employees}
                    element={
                        <EmployeePage/>
+                   }
+            />
+            <Route path={routes.offices}
+                   element={
+                       <OfficePage/>
+                   }
+            />
+            <Route path={`${routes.offices}/new`}
+                   element={
+                       <OfficeRegistrationPage/>
+                   }
+            />
+            <Route path={`${routes.offices}/:id`}
+                   element={
+                       <OfficeOnePage/>
                    }
             />
         </Route>

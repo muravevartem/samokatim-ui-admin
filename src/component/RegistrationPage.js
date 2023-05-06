@@ -180,7 +180,7 @@ function RegPageStep2({company, onChange, onPrev, onNext}) {
     return (
         <Stack minH='100vh'>
             <Center minH='100vh'>
-                <VStack spacing={6}>
+                <VStack spacing={6} p={2}>
                     <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
                           bgClip='text'
                           p={2}
@@ -326,7 +326,6 @@ function RegPageStep3({company}) {
                     alignItems='center'
                     justifyContent='center'
                     textAlign='center'
-                    height='200px'
                     rounded={10}
                 >
                     <AlertIcon boxSize='40px' mr={0}/>
