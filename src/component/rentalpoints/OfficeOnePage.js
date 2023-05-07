@@ -80,8 +80,7 @@ export function OfficeOnePage() {
                           fontWeight="extrabold">
                         <IoMdHome size={72}/>
                     </Text>
-                    <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                          bgClip='text'
+                    <Text color='brand.500'
                           p={2}
                           fontSize="6xl"
                           textAlign='center'
@@ -211,7 +210,7 @@ function Field({name, fieldValue, copyValue, onClick, copyText}) {
                   fontWeight="bolder">
                 {name}
             </Text>
-            <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
+            <Tag bg='brand.500'
                  color='white'
                  cursor={'pointer'}
                  p={2}

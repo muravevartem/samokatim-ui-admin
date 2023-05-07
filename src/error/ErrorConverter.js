@@ -13,6 +13,7 @@ class ErrorConverter {
     }
 
     convertToToastBody(e) {
+        console.log(e)
         if (e instanceof AxiosError) {
             let data = e.response.data;
             if (data.message) {

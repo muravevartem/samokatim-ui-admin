@@ -30,9 +30,10 @@ export function OfficeScheduleComponent({value, onChange}) {
                 }
                 {!value.dayOff &&
                     <HStack spacing={1} justifyContent='center'>
-                        <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
+                        <Tag bg='brand.500'
                              color='white'>
                             <Input type='time'
+                                   border='none'
                                    value={toLocalTime(value.start)}
                                    onChange={e =>{
                                        onChange({...value, start: toOffsetTime(e.target.value)})}
@@ -47,9 +48,10 @@ export function OfficeScheduleComponent({value, onChange}) {
                               fontWeight="extrabold">
                             -
                         </Text>
-                        <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
+                        <Tag bg='brand.500'
                              color='white'>
                             <Input type='time'
+                                   border='none'
                                    value={toLocalTime(value.end)}
                                    onChange={e => onChange({...value, end: toOffsetTime(e.target.value)})}
                                    fontSize="lg"

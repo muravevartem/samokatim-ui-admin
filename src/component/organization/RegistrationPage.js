@@ -20,14 +20,14 @@ import {
     VStack
 } from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
-import {routes} from "../routes";
-import {organizationService} from "../service/OrganizationService.js";
+import {routes} from "../../routes.js";
+import {organizationService} from "../../service/OrganizationService.js";
 import isEmail from "validator/es/lib/isEmail.js";
 import isMobilePhone from "validator/es/lib/isMobilePhone.js";
 import isVAT from "validator/es/lib/isVAT.js";
-import {errorConverter} from "../error/ErrorConverter.js";
+import {errorConverter} from "../../error/ErrorConverter.js";
 import isEmpty from "validator/es/lib/isEmpty.js";
-import {DEFAULT_EMAIL} from "./util.js";
+import {DEFAULT_EMAIL} from "../util.js";
 
 
 export function RegistrationPage() {

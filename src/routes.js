@@ -1,8 +1,8 @@
 import React from "react";
 import {createBrowserRouter, createRoutesFromElements, Navigate, Route} from "react-router-dom";
 import Root from "./component/Root";
-import {OrganizationAdminPanel} from "./component/OrganizationAdminPanel.js";
-import {RegistrationPage} from "./component/RegistrationPage";
+import {OrganizationPage} from "./component/organization/OrganizationPage.js";
+import {RegistrationPage} from "./component/organization/RegistrationPage.js";
 import SecuredPage from "./component/SecuredPage.js";
 import {SiginPage} from "./component/SiginPage.js";
 import {InventoryPage} from "./component/inventory/InventoryPage.js";
@@ -41,7 +41,7 @@ export const router = createBrowserRouter(
             <Route path={routes.home}
                    element={
                        <SecuredPage>
-                           <OrganizationAdminPanel/>
+                           <OrganizationPage/>
                        </SecuredPage>
                    }
             />

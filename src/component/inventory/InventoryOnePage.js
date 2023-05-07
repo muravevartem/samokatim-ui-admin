@@ -37,6 +37,7 @@ import moment from "moment";
 import {INVENTORY_ICON} from "../icons.js";
 import {inventoryStatus, toEventBlock} from "../../util.js";
 import {MainHeader} from "../components.js";
+import {TariffItem, TarriffSelection} from "../organization/TariffComponents.js";
 
 export function InventoryOnePage() {
     let {id} = useParams();
@@ -94,10 +95,6 @@ export function InventoryOnePage() {
                         {inventory.alias}
                     </Text>
                 </HStack>
-                {/*<IconButton aria-label='delete'*/}
-                {/*            size='sm'*/}
-                {/*            colorScheme='red'*/}
-                {/*            icon={<IoMdTrash/>}/>*/}
             </HStack>
             <SimpleGrid columns={[null, 2, 3]} gap={4}>
                 <Field name='Владелец'
@@ -114,11 +111,7 @@ export function InventoryOnePage() {
                 <Field name='Дата регистрации'
                        fieldValue={moment(inventory.createdAt).format('LLL')}
                 />
-                {inventory.lastMonitoringRecord &&
-                    <Field name='Последняя локация'
-                           fieldValue={`${inventory.lastMonitoringRecord.lat}, ${inventory.lastMonitoringRecord.lng}`}
-                    />
-                }
+                <TariffField value={inventory} onChange={setInventory}/>
                 <Field name='Статус'
                        onClick={() => {
                            if (inventory.status === 'IN_WORK') {
@@ -264,6 +257,24 @@ function Field({name, fieldValue, copyValue, onClick, copyText}) {
                 {fieldValue}
             </Tag>
         </FormControl>
+    )
+}
+
+function TariffField({value, onChange}) {
+
+    return (
+        <>
+            <FormControl>
+                <Text fontSize="xl"
+                      fontWeight="bolder">
+                    Тарифы
+                </Text>
+                <HStack wrap='wrap' gap={1} spacing={0}>
+                    {value.tariffs.map(v => <TariffItem tariff={v} onChange={onChange} value={value}/>)}
+                    <TarriffSelection value={value} onChange={onChange}/>
+                </HStack>
+            </FormControl>
+        </>
     )
 }
 

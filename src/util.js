@@ -24,6 +24,18 @@ export const inventoryStatus = {
     DECOMMISSIONED: 'Списан'
 }
 
+export const tariffType = {
+    MINUTE_BY_MINUTE: 'Поминутный',
+    LONG_TERM: 'Долгосрочный',
+    TRAVEL_CARD: 'Проездной'
+}
+
+export const tariffUnit = {
+    MINUTE_BY_MINUTE: '₽/мин',
+    LONG_TERM: '₽/день',
+    TRAVEL_CARD: '₽/мес'
+}
+
 
 export const toEventBlock = (event) => {
     if (event.type === 'INVENTORY_STATUS_CHANGED')

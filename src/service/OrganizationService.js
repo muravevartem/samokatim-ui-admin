@@ -12,6 +12,25 @@ class OrganizationService {
         return response.data;
     }
 
+    async getMyOrg(){
+        let axiosResponse = await $api.get(`/api/v1/orgs/me`);
+        return axiosResponse.data;
+    }
+
+    async getTariffs() {
+        let axiosResponse = await $api.get(`/api/v1/orgs/me/tariffs`);
+        return axiosResponse.data;
+    }
+
+    async addTariff(tariff) {
+        let axiosResponse = await $api.post(`/api/v1/orgs/me/tariffs`, tariff);
+        return axiosResponse.data;
+    }
+
+    async deleteTariff(tariff) {
+        let axiosResponse = await $api.delete(`/api/v1/orgs/me/tariffs/${tariff.id}`);
+        return axiosResponse.data;
+    }
 }
 
 export const organizationService = new OrganizationService();
