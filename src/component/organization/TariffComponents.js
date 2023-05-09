@@ -300,7 +300,9 @@ export function TarriffSelection({value, onChange}) {
                         <AlertDialogBody>
                             <Stack>
                                 <FormControl>
-                                    <Select value={state} onChange={e => setState(e.target.value)}>
+                                    <Select placeholder='Тип'
+                                            value={state}
+                                            onChange={e => setState(e.target.value)}>
                                         {info.map(tariff =>
                                             <option value={tariff.id} key={tariff.id}>{tariff.alias}</option>
                                         )}
@@ -320,7 +322,7 @@ export function TarriffSelection({value, onChange}) {
                             <Button colorScheme='brand'
                                     onClick={setTariff}
                                     ml={3}
-                                    isDisabled={loading}>
+                                    isDisabled={loading || !state}>
                                 Добавить
                             </Button>
                         </AlertDialogFooter>

@@ -7,7 +7,7 @@ export function OfficeScheduleComponent({value, onChange}) {
         <Stack p={3} bgColor='white' rounded={5}>
             <HStack justifyContent='space-between'>
                 <Text color={value.dayOff ? 'gray.500' : 'brand.500'}
-                      fontSize="2xl"
+                      fontSize="lg"
                       fontWeight="extrabold">
                     {toDayName(value.day)}
                 </Text>
@@ -20,7 +20,7 @@ export function OfficeScheduleComponent({value, onChange}) {
                     <HStack spacing={1} justifyContent='center'>
                         <Tag bgColor='gray.600'
                              color='white'>
-                            <Text fontSize="lg"
+                            <Text fontSize="md"
                                   textAlign='center'
                                   fontWeight="extrabold">
                                 Выходной
@@ -38,7 +38,8 @@ export function OfficeScheduleComponent({value, onChange}) {
                                    onChange={e =>{
                                        onChange({...value, start: toOffsetTime(e.target.value)})}
                                    }
-                                   fontSize="lg"
+                                   p={0}
+                                   fontSize="md"
                                    textAlign='center'
                                    fontWeight="extrabold"/>
                         </Tag>
@@ -54,7 +55,8 @@ export function OfficeScheduleComponent({value, onChange}) {
                                    border='none'
                                    value={toLocalTime(value.end)}
                                    onChange={e => onChange({...value, end: toOffsetTime(e.target.value)})}
-                                   fontSize="lg"
+                                   fontSize="md"
+                                   p={0}
                                    textAlign='center'
                                    fontWeight="extrabold"/>
                         </Tag>

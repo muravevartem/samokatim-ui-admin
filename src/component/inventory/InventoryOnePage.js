@@ -36,8 +36,8 @@ import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
 import moment from "moment";
 import {INVENTORY_ICON} from "../icons.js";
 import {inventoryStatus, toEventBlock} from "../../util.js";
-import {MainHeader} from "../components.js";
 import {TariffItem, TarriffSelection} from "../organization/TariffComponents.js";
+import {OfficeSelecton} from "./InventoryComponents.js";
 
 export function InventoryOnePage() {
     let {id} = useParams();
@@ -73,7 +73,6 @@ export function InventoryOnePage() {
 
     return (
         <Stack p={5} divider={<Divider/>}>
-            <MainHeader fixed/>
             <HStack justifyContent='space-between'>
                 <HStack>
                     <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
@@ -129,9 +128,11 @@ export function InventoryOnePage() {
                 <ModificationStatusBlock inventory={inventory} isOpen={isOpenStatusChange}
                                          onClose={() => setOpenStatusChange(false)}
                                          onUpdate={updated => setInventory(updated)}/>
+
+                {!inventory.supportsTelemetry && <OfficeField value={inventory} onChange={setInventory}/>}
             </SimpleGrid>
             <Divider/>
-            <InventoryLocation inventory={inventory}/>
+            {!inventory.office && <InventoryLocation inventory={inventory}/>}
             <Divider/>
             <InventoryEventBlock inventory={inventory}/>
         </Stack>
@@ -261,20 +262,31 @@ function Field({name, fieldValue, copyValue, onClick, copyText}) {
 }
 
 function TariffField({value, onChange}) {
-
     return (
-        <>
-            <FormControl>
-                <Text fontSize="xl"
-                      fontWeight="bolder">
-                    Тарифы
-                </Text>
-                <HStack wrap='wrap' gap={1} spacing={0}>
-                    {value.tariffs.map(v => <TariffItem tariff={v} onChange={onChange} value={value}/>)}
-                    <TarriffSelection value={value} onChange={onChange}/>
-                </HStack>
-            </FormControl>
-        </>
+        <FormControl>
+            <Text fontSize="xl"
+                  fontWeight="bolder">
+                Тарифы
+            </Text>
+            <HStack wrap='wrap' gap={1} spacing={0}>
+                {value.tariffs.map(v => <TariffItem tariff={v} onChange={onChange} value={value}/>)}
+                <TarriffSelection value={value} onChange={onChange}/>
+            </HStack>
+        </FormControl>
+    )
+}
+
+function OfficeField({value, onChange}) {
+    return (
+        <FormControl>
+            <Text fontSize="xl"
+                  fontWeight="bolder">
+                Офис
+            </Text>
+            <HStack wrap='wrap' gap={1} spacing={0}>
+                <OfficeSelecton value={value} onChange={onChange}/>
+            </HStack>
+        </FormControl>
     )
 }
 

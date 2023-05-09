@@ -91,9 +91,9 @@ export function OfficeOnePage() {
             </HStack>
             <SimpleGrid columns={[null, 2, 3]} gap={4}>
                 <Field name='Владелец'
-                       copyValue={data.organization?.inn??''}
+                       copyValue={data.organization?.inn ?? ''}
                        copyText={`ИНН организации скопирован`}
-                       fieldValue={data.organization?.name??''}
+                       fieldValue={data.organization?.name ?? ''}
                 />
                 <Field name='Индентификатор'
                        fieldValue={`${data.id}`}
@@ -152,6 +152,7 @@ function ModificationStatusBlock({inventory, isOpen, onClose, onUpdate}) {
 
                     <AlertDialogBody>
                         <Select value={state}
+                                placeholder='test'
                                 isDisabled={loading}
                                 onChange={e => setState(e.target.value)}>
                             {Object.keys(inventoryStatus).map(x => <option value={x}
@@ -179,21 +180,30 @@ function ModificationStatusBlock({inventory, isOpen, onClose, onUpdate}) {
 
 function OfficeSchedules({value, onChange}) {
     return (
-       <SimpleGrid minChildWidth={300} gap={4}>
-           {(value.schedules ?? []).map((item, index, array) =>
-               (<OfficeScheduleComponent
-                   key={index}
-                   value={item}
-                   onChange={e => {
-                       array[index] = e
-                       console.log(e)
-                       onChange({
-                           ...value,
-                           schedules: [...array]
-                       })
-                   }}
-               />))}
-       </SimpleGrid>
+        <Stack>
+            <Text
+                bgGradient="linear(to-l, #7928CA,#FF0080)"
+                bgClip='text'
+                fontWeight='extrabold'
+                fontSize='xl'>
+                Режим работы
+            </Text>
+            <SimpleGrid minChildWidth={300} gap={4}>
+                {(value.schedules ?? []).map((item, index, array) =>
+                    (<OfficeScheduleComponent
+                        key={index}
+                        value={item}
+                        onChange={e => {
+                            array[index] = e
+                            console.log(e)
+                            onChange({
+                                ...value,
+                                schedules: [...array]
+                            })
+                        }}
+                    />))}
+            </SimpleGrid>
+        </Stack>
     )
 }
 

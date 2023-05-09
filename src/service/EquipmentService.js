@@ -31,6 +31,11 @@ class EquipmentService {
         let axiosResponse = await $api.delete(`/api/v1/inventories/${id}/tariffs/${tariffId}`);
         return axiosResponse.data;
     }
+
+    async deleteOffice(id) {
+        let axiosResponse = await $api.delete(`/api/v1/inventories/${id}/office`);
+        return axiosResponse.data;
+    }
 }
 
 export const equipmentService = new EquipmentService();
