@@ -22,5 +22,6 @@ export const eventBus = new EventBus();
 
 
 export const AppEvents = {
-    MarkerLocated: "MarkerLocated"
+    MarkerLocated: "MarkerLocated",
+    LogoUploaded: 'LogoUploaded'
 }

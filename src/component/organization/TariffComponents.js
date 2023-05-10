@@ -8,7 +8,6 @@ import {
     Button,
     Card,
     CardBody,
-    CardFooter,
     CardHeader,
     FormControl,
     FormErrorMessage,
@@ -66,16 +65,28 @@ export function TariffItemInfo({tariff, onChange}) {
                         p={1}
                         fontWeight='extrabold'
             >
-                {tariffType[tariff.type]}
+                <Stack>
+                    <HStack justifyContent='space-between'>
+                        <Text>
+                            {tariff.alias}
+                        </Text>
+                        <IconButton aria-label='delete'
+                                    colorScheme='pink'
+                                    size='sm'
+                                    onClick={deleteTariff}
+                                    icon={<IoMdTrash/>}/>
+                    </HStack>
+                    <Tag size='sm' w='max-content'>
+                        {tariffType[tariff.type]}
+                    </Tag>
+                </Stack>
             </CardHeader>
             <CardBody p={1}>
                 <Text fontSize='2xl' fontWeight='extrabold' color='brand.600'>
                     {tariff.price.toFixed(2)} {tariffUnit[tariff.type]}
                 </Text>
             </CardBody>
-            <CardFooter p={1}>
-                <Button size='sm' onClick={deleteTariff}>Удалить</Button>
-            </CardFooter>
+
         </Card>
     )
 }
@@ -182,7 +193,7 @@ export function TariffAddButton({value, onChange}) {
 export function TariffItem({tariff, value, onChange}) {
     const [loading, setLoading] = useState(false);
     let toast = useToast();
-    const { isOpen, onToggle, onClose } = useDisclosure()
+    const {isOpen, onToggle, onClose} = useDisclosure()
 
     async function deleteItem() {
         try {
@@ -215,8 +226,8 @@ export function TariffItem({tariff, value, onChange}) {
                 </Tag>
             </PopoverTrigger>
             <PopoverContent>
-                <PopoverArrow />
-                <PopoverCloseButton />
+                <PopoverArrow/>
+                <PopoverCloseButton/>
                 <PopoverHeader>
                     <Text fontWeight='bold'>{tariff.alias}</Text>
                 </PopoverHeader>

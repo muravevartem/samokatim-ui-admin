@@ -31,6 +31,12 @@ class OrganizationService {
         let axiosResponse = await $api.delete(`/api/v1/orgs/me/tariffs/${tariff.id}`);
         return axiosResponse.data;
     }
+
+    async changeLogo(logo) {
+        let axiosResponse = await $api.post(`/api/v1/orgs/me/logo`, {fileId: logo.id});
+        return axiosResponse.data;
+    }
+
 }
 
 export const organizationService = new OrganizationService();
