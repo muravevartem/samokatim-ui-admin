@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Avatar, Box, Button, Center, CircularProgress, HStack, Stack, Text, useToast, VStack} from "@chakra-ui/react";
+import {Box, Button, Center, CircularProgress, HStack, Stack, Text, useToast, VStack} from "@chakra-ui/react";
 import {MapContainer, TileLayer} from "react-leaflet";
 import {errorConverter} from "../../error/ErrorConverter.js";
 import {organizationService} from "../../service/OrganizationService.js";
 import {TariffAddButton, TariffItemInfo} from "./TariffComponents.js";
-import {InputFile} from "../file/FileComponents.js";
+import {InputImage} from "../file/FileComponents.js";
 import {AppEvents, eventBus} from "../../service/EventBus.js";
 import {fileService} from "../../service/FileService.js";
+import {RemoteImage} from "../icons.js";
 
 export function OrganizationPage() {
     const [state, setState] = useState();
@@ -28,13 +29,10 @@ export function OrganizationPage() {
 
     async function changeAvatar(file) {
         try {
-            setLoading(true)
             let loaded = await organizationService.changeLogo(file)
             setState(loaded);
         } catch (e) {
             toast(errorConverter.convertToToastBody(e))
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -65,9 +63,9 @@ function BaseInfo({org}) {
     return (
         <HStack>
             <Box boxSize='100px'>
-                <InputFile onUpload={file => eventBus.raise(AppEvents.LogoUploaded, file)}>
-                    <Avatar src={fileService.url(org.logo)} size='xl'/>
-                </InputFile>
+                <InputImage onUpload={file => eventBus.raise(AppEvents.LogoUploaded, file)}>
+                    <RemoteImage src={fileService.url(org.logo)} size='100'/>
+                </InputImage>
             </Box>
             <VStack alignItems='start'>
                 <Text color='brand.600'

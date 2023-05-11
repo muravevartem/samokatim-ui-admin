@@ -3,7 +3,6 @@ import {
     AlertDialog,
     AlertDialogBody,
     AlertDialogContent,
-    AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogOverlay,
     Box,
@@ -23,7 +22,7 @@ import {errorConverter} from "../../error/ErrorConverter.js";
 import {FiFile} from "react-icons/fi";
 import {Cropper} from "react-cropper";
 
-export function InputFile({children, onUpload}) {
+export function InputImage({children, onUpload}) {
     let {isOpen, onOpen, onClose} = useDisclosure();
     const cancelRef = React.useRef()
     let [files, setFiles] = useState([]);
@@ -53,15 +52,6 @@ export function InputFile({children, onUpload}) {
                                 <ImageUpload files={files} setFiles={setFiles} onUpload={onUpload}/>
                             </Stack>
                         </AlertDialogBody>
-
-                        <AlertDialogFooter>
-                            <Button ref={cancelRef} onClick={onClose}>
-                                Отмена
-                            </Button>
-                            <Button colorScheme='brand' onClick={onClose} ml={3}>
-                                Сохранить
-                            </Button>
-                        </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialogOverlay>
             </AlertDialog>
