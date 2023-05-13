@@ -18,6 +18,7 @@ export function RemoteImage({size, src}) {
                         w={size}
                         h={size}>
             <Image boxSize={size}
+                   bgColor='brand.200'
                    borderRadius='full'
                    onLoad={() => setLoading(false)}
                    src={src}/>

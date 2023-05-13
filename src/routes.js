@@ -13,6 +13,7 @@ import {EmployeePage} from "./component/employees/EmployeePage.js";
 import {OfficeRegistrationPage} from "./component/rentalpoints/OfficeRegistrationPage.js";
 import {OfficePage} from "./component/rentalpoints/OfficePage.js";
 import {OfficeOnePage} from "./component/rentalpoints/OfficeOnePage.js";
+import {Alert, AlertIcon} from "@chakra-ui/react";
 
 export const routes = {
     root: '/',
@@ -32,7 +33,14 @@ export const routes = {
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route path={routes.root} element={<Root/>}>
+        <Route path={routes.root}
+               element={<Root/>}
+               errorElement={
+                   <Alert status='error'>
+                       <AlertIcon/>
+                       Страница не найдена
+                   </Alert>
+               }>
             <Route path=''
                    element={
                        <Navigate to={routes.home}/>

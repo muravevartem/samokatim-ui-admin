@@ -95,12 +95,10 @@ export function ConfirmationUserPage() {
                                 <PinInputField/>
                                 <PinInputField/>
                                 <PinInputField/>
-                                <PinInputField/>
-                                <PinInputField/>
                             </PinInput>
                         </HStack>
                     </FormControl>
-                    <Collapse in={state.code.length === 8} animateOpacity>
+                    <Collapse in={state.code.length === 6} animateOpacity>
                         <Stack w='100%'>
                             <FormControl>
                                 <FormLabel>
@@ -156,7 +154,7 @@ export function ConfirmationUserPage() {
                                             isDisabled={
                                                 state.password.length < 6
                                                 || state.confirmPassword !== state.password
-                                                || state.code.length !== 8
+                                                || state.code.length !== 6
                                             }
                                             onClick={setNewPassword}>
                                         Изменить

@@ -8,12 +8,14 @@ import {InputImage} from "../file/FileComponents.js";
 import {AppEvents, eventBus} from "../../service/EventBus.js";
 import {fileService} from "../../service/FileService.js";
 import {RemoteImage} from "../icons.js";
+import {useNavigate} from "react-router-dom";
 
 export function OrganizationPage() {
     const [state, setState] = useState();
     const [loading, setLoading] = useState(true);
 
     let toast = useToast();
+    let navigate = useNavigate();
 
     async function loadOrg() {
         try {
@@ -64,7 +66,9 @@ function BaseInfo({org}) {
         <HStack>
             <Box boxSize='100px'>
                 <InputImage onUpload={file => eventBus.raise(AppEvents.LogoUploaded, file)}>
-                    <RemoteImage src={fileService.url(org.logo)} size='100'/>
+                    {org?.logo &&
+                        <RemoteImage src={fileService.url(org.logo)} size='100'/>
+                    }
                 </InputImage>
             </Box>
             <VStack alignItems='start'>
