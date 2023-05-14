@@ -43,8 +43,8 @@ export function InputImage({children, onUpload}) {
             >
                 <AlertDialogOverlay>
                     <AlertDialogContent>
-                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                            Загрузка файла
+                        <AlertDialogHeader fontSize='xl' fontWeight='bold' textAlign='center'>
+                            Загрузка изображения
                         </AlertDialogHeader>
 
                         <AlertDialogBody>
@@ -186,6 +186,7 @@ function ImageUpload({files, setFiles, multiple = false, onUpload}) {
     return (
         <Stack>
             <input type='file'
+                   accept='image/jpeg'
                    multiple={multiple}
                    id='input-id'
                    style={{display: 'none'}}
@@ -235,24 +236,26 @@ function ImageUpload({files, setFiles, multiple = false, onUpload}) {
                     </HStack>
                 ))}
             </Stack>
-            <label htmlFor='input-id'>
-                <Stack bgColor='brand.100'
-                       rounded={10}
-                       p={5}>
-                    <Stack>
-                        {!loading &&
-                            <Text textAlign='center'
-                                  color='brand.600'
-                                  fontWeight='extrabold'>
-                                Выбрать файл
-                            </Text>
-                        }
-                        {loading &&
-                            <CircularProgress isIndeterminate/>
-                        }
+            {(multiple || files.length === 0) &&
+                <label htmlFor='input-id'>
+                    <Stack bgColor='brand.100'
+                           rounded={10}
+                           p={2}>
+                        <Stack>
+                            {!loading &&
+                                <Text textAlign='center'
+                                      color='brand.600'
+                                      fontWeight='extrabold'>
+                                    Выбрать файл
+                                </Text>
+                            }
+                            {loading &&
+                                <CircularProgress isIndeterminate/>
+                            }
+                        </Stack>
                     </Stack>
-                </Stack>
-            </label>
+                </label>
+            }
         </Stack>
     )
 }

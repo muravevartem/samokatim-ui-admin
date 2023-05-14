@@ -8,7 +8,6 @@ import {
     FormControl,
     FormHelperText,
     HStack,
-    Input,
     Select,
     Spinner,
     Switch,
@@ -27,7 +26,6 @@ import {errorConverter} from "../../error/ErrorConverter.js";
 export function InventoryRegistrationPage() {
     const [step, setStep] = useState(0)
     const [inventory, setInventory] = useState({
-        alias: '',
         inventoryClass: 'STANDARD',
         model: {}
     })
@@ -59,16 +57,14 @@ export function InventoryRegistrationPage() {
     }
 
     const steps = [
-        (<Step1 onPrev={onCancel} onNext={onNext}/>),
-        (<Step2 onPrev={onPrev} onNext={onNext} value={inventory.model}
+        (<StartStep onPrev={onCancel} onNext={onNext}/>),
+        (<ModelStep onPrev={onPrev} onNext={onNext} value={inventory.model}
                 onChange={model => setInventory({...inventory, model: model})}/>),
         (<Step3 onPrev={onPrev} onNext={onNext}
                 onChange={value => setInventory({...inventory, inventoryClass: value})}/>),
-        (<Step4 onPrev={onPrev} onNext={onNext} value={inventory.alias}
-                onChange={value => setInventory({...inventory, alias: value})}/>),
         (<SupportesTelemetry onPrev={onPrev} onNext={onNext} value={inventory.supportsTelemetry??false}
                              onChange={value => setInventory({...inventory, supportsTelemetry: value})}/>),
-        (<Step5 onPrev={onPrev} onNext={onCreate} value={inventory}/>)
+        (<ResultStep onPrev={onPrev} onNext={onCreate} value={inventory}/>)
     ]
 
     return (
@@ -87,7 +83,7 @@ export function InventoryRegistrationPage() {
     )
 }
 
-function Step1({onPrev, onNext}) {
+function StartStep({onPrev, onNext}) {
     return (
         <VStack spacing={10}>
             <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
@@ -112,7 +108,7 @@ function Step1({onPrev, onNext}) {
     )
 }
 
-function Step2({onPrev, onNext, value, onChange}) {
+function ModelStep({onPrev, onNext, value, onChange}) {
 
     return (
         <VStack p={10}>
@@ -166,38 +162,6 @@ function Step3({onPrev, onNext, value, onChange}) {
     )
 }
 
-function Step4({onPrev, onNext, value, onChange}) {
-    return (
-        <VStack p={10} spacing={5}>
-            <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  bgClip="text"
-                  fontSize="3xl"
-                  textAlign='center'
-                  fontWeight="extrabold">
-                Название инвентаря
-            </Text>
-            <FormControl>
-                <Input value={value}
-                       fontWeight='bolder'
-                       onChange={e => onChange(e.target.value)}/>
-                <FormHelperText>
-                    Минимум 4 символа
-                </FormHelperText>
-            </FormControl>
-            <HStack justifyContent='center'>
-                <Button onClick={onPrev}>
-                    Назад
-                </Button>
-                <Button colorScheme='brand'
-                        isDisabled={value.length < 4}
-                        onClick={onNext}>
-                    Далее
-                </Button>
-            </HStack>
-        </VStack>
-    )
-}
-
 function SupportesTelemetry({onPrev, onNext, value, onChange}) {
     console.log(value)
     return (
@@ -230,7 +194,7 @@ function SupportesTelemetry({onPrev, onNext, value, onChange}) {
     )
 }
 
-function Step5({onPrev, onNext, value}) {
+function ResultStep({onPrev, onNext, value}) {
     return (
         <VStack p={10} spacing={5}>
             <Text color="brand.500"
@@ -240,23 +204,6 @@ function Step5({onPrev, onNext, value}) {
                 Регистрация инвентаря
             </Text>
             <Divider/>
-            <HStack alignItems='end'>
-                <Text color='brand.500'
-                      p={2}
-                      fontSize="xl"
-                      textAlign='center'
-                      fontWeight="extrabold">
-                    Название
-                </Text>
-                <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
-                     color='white'
-                     p={2}
-                     fontSize="xl"
-                     textAlign='center'
-                     fontWeight="extrabold">
-                    {value.alias}
-                </Tag>
-            </HStack>
             <HStack alignItems='end'>
                 <Text color='brand.500'
                       p={2}

@@ -47,8 +47,7 @@ export const inventoryStatus = {
 
 export const tariffType = {
     MINUTE_BY_MINUTE: 'Поминутный',
-    LONG_TERM: 'Долгосрочный',
-    TRAVEL_CARD: 'Проездной'
+    LONG_TERM: 'Долгосрочный'
 }
 
 export const tariffUnit = {

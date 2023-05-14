@@ -50,6 +50,9 @@ export function MainHeader({fixed}) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     let navigate = useNavigate();
 
+    if (!userService.authenticated())
+        return null;
+
     return (
         <>
             <HStack p={4}
@@ -132,8 +135,7 @@ export function MainHeader({fixed}) {
                 }
                 {userService.authenticated() &&
                     <Button fontSize="xl"
-                            bgGradient="linear(to-l, #7928CA,#FF0080)"
-                            _hover={{bgColor: "linear(to-l, #7928CA,#FF0080)"}}
+                            colorScheme='brand'
                             textAlign='center'
                             onClick={() => userService.signout()}
                             fontWeight="extrabold">
@@ -142,8 +144,7 @@ export function MainHeader({fixed}) {
                 }
                 {!userService.authenticated() &&
                     <Button fontSize="xl"
-                            bgGradient="linear(to-l, #7928CA,#FF0080)"
-                            _hover={{bgColor: "linear(to-l, #7928CA,#FF0080)"}}
+                            colorScheme='brand'
                             textAlign='center'
                             onClick={() => navigate(routes.signin)}
                             fontWeight="extrabold">

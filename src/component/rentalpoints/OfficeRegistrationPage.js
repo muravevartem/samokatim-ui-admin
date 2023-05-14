@@ -245,7 +245,7 @@ export function LocationMarker({show, location, onChange}) {
             if (!location) {
                 let latlng = e.latlng;
                 onChange(latlng)
-                map.flyTo(latlng, map.getZoom())
+                map.flyTo(latlng, map.getZoom(), {animate: false})
             }
         },
     })

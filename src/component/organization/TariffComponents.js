@@ -7,7 +7,6 @@ import {
     AlertDialogOverlay,
     Button,
     Card,
-    CardBody,
     CardHeader,
     FormControl,
     FormErrorMessage,
@@ -25,7 +24,7 @@ import {
     PopoverContent,
     PopoverHeader,
     PopoverTrigger,
-    Select,
+    SimpleGrid,
     Stack,
     Tag,
     Text,
@@ -33,18 +32,22 @@ import {
     useToast,
     VStack
 } from "@chakra-ui/react";
+import {Select} from "chakra-react-select"
 import {tariffType, tariffUnit} from "../../util.js";
-import {IoMdAdd, IoMdCash, IoMdTrash} from "react-icons/io";
+import {IoMdAdd, IoMdCash, IoMdConstruct, IoMdTrash} from "react-icons/io";
 import React, {useEffect, useState} from "react";
 import isNumeric from "validator/es/lib/isNumeric.js";
 import {organizationService} from "../../service/OrganizationService.js";
 import {errorConverter} from "../../error/ErrorConverter.js";
 import {equipmentService} from "../../service/EquipmentService.js";
 import isEmpty from "validator/es/lib/isEmpty.js";
+import {DaysOfWeek} from "../util.js";
 
 export function TariffItemInfo({tariff, onChange}) {
+    let [state, setState] = useState();
     const [loading, setLoading] = useState(false);
     let toast = useToast();
+    let {isOpen, onOpen, onClose} = useDisclosure();
 
     async function deleteTariff() {
         try {
@@ -58,9 +61,59 @@ export function TariffItemInfo({tariff, onChange}) {
         }
     }
 
+    async function changeTariff() {
+        try {
+            setLoading(true);
+            let changed = await organizationService.changeTariff({
+                id: state.id,
+                type: state.type.value,
+                price: state.price,
+                initialPrice: state.initialPrice,
+                deposit: state.deposit,
+                alias: state.alias
+            });
+            onChange(changed)
+        } catch (e) {
+            toast(errorConverter.convertToToastBody(e))
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    function openEditMode() {
+        setState({
+            id: tariff.id,
+            alias: tariff.alias,
+            type: {
+                value: tariff.type,
+                label: tariffType[tariff.type]
+            },
+            price: tariff.price.toString(),
+            initialPrice: tariff.initialPrice.toString(),
+            deposit: tariff.deposit.toString(),
+            days: tariff.days.map(day => ({
+                value: day,
+                label: DaysOfWeek[day]
+            }))
+        })
+        onOpen();
+    }
+
+    if (isOpen) {
+        return (
+            <TariffInput state={state}
+                         setState={setState}
+                         loading={loading}
+                         isOpen={isOpen}
+                         onClose={onClose}
+                         edit={true}
+                         sendTariff={changeTariff}/>
+        )
+    }
+
 
     return (
-        <Card w='max-content' p={2}>
+        <Card w='max-content' p={2} minH={300} w='100%' maxW={400}>
             <CardHeader fontSize='xl'
                         p={1}
                         fontWeight='extrabold'
@@ -70,22 +123,52 @@ export function TariffItemInfo({tariff, onChange}) {
                         <Text>
                             {tariff.alias}
                         </Text>
-                        <IconButton aria-label='delete'
-                                    colorScheme='pink'
-                                    size='sm'
-                                    onClick={deleteTariff}
-                                    icon={<IoMdTrash/>}/>
+                        <HStack>
+                            <IconButton aria-label='modify'
+                                        size='sm'
+                                        onClick={openEditMode}
+                                        icon={<IoMdConstruct/>}/>
+                            <IconButton aria-label='delete'
+                                        colorScheme='pink'
+                                        size='sm'
+                                        onClick={deleteTariff}
+                                        icon={<IoMdTrash/>}/>
+                        </HStack>
                     </HStack>
                     <Tag size='sm' w='max-content'>
                         {tariffType[tariff.type]}
                     </Tag>
+                    <HStack wrap='wrap' gap={2} spacing={0}>
+                        {(tariff.days??[]).map(day => (
+                            <Tag colorScheme='brand'>{DaysOfWeek[day]}</Tag>
+                        ))}
+                    </HStack>
                 </Stack>
             </CardHeader>
-            <CardBody p={1}>
-                <Text fontSize='2xl' fontWeight='extrabold' color='brand.600'>
-                    {tariff.price.toFixed(2)} {tariffUnit[tariff.type]}
-                </Text>
-            </CardBody>
+            <SimpleGrid columns={[null, 2]} gap={2}>
+                <Stack spacing={0} p={2} bgColor='whitesmoke' rounded={10}>
+                    <Text fontWeight='bolder'>Стоимость</Text>
+                    <Text fontSize='md' fontWeight='extrabold' color='brand.600'>
+                        {tariff.price.toFixed(2)} {tariffUnit[tariff.type]}
+                    </Text>
+                </Stack>
+                {tariff.deposit &&
+                    <Stack spacing={0} p={2} bgColor='whitesmoke' rounded={10}>
+                        <Text fontWeight='bolder'>Депозит</Text>
+                        <Text fontSize='md' fontWeight='extrabold' color='brand.600'>
+                            {tariff.deposit.toFixed(2)} ₽
+                        </Text>
+                    </Stack>
+                }
+                {tariff.initialPrice &&
+                    <Stack spacing={0} p={2} bgColor='whitesmoke' rounded={10}>
+                        <Text fontWeight='bolder'>Начальная стоимость</Text>
+                        <Text fontSize='md' fontWeight='extrabold' color='brand.600'>
+                            {tariff.initialPrice.toFixed(2)} ₽
+                        </Text>
+                    </Stack>
+                }
+            </SimpleGrid>
 
         </Card>
     )
@@ -95,17 +178,28 @@ export function TariffAddButton({value, onChange}) {
     const {isOpen, onOpen, onClose} = useDisclosure()
     const [loading, setLoading] = useState(false);
     const [state, setState] = useState({
-        type: 'MINUTE_BY_MINUTE',
-        price: '0',
-        alias: ''
+        type: '',
+        price: '',
+        initialPrice: '',
+        deposit: '',
+        alias: '',
+        days: []
     });
     let toast = useToast();
+
 
 
     async function sendTariff() {
         try {
             setLoading(true);
-            let changed = await organizationService.addTariff(state);
+            let changed = await organizationService.addTariff({
+                type: state.type.value,
+                price: state.price,
+                initialPrice: state.initialPrice,
+                deposit: state.deposit,
+                alias: state.alias,
+                days: state.days.map(day => day.value)
+            });
             onClose();
             onChange(changed)
         } catch (e) {
@@ -115,6 +209,7 @@ export function TariffAddButton({value, onChange}) {
         }
     }
 
+
     return (
         <>
             <IconButton aria-label='Add tariff'
@@ -123,70 +218,135 @@ export function TariffAddButton({value, onChange}) {
                         size='sm'
                         icon={<IoMdAdd/>}
                         isRound/>
-            <AlertDialog
-                isOpen={isOpen}
-                onClose={onClose}
-            >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                            Добавление тарифа
-                        </AlertDialogHeader>
+            <TariffInput state={state}
+                         setState={setState}
+                         loading={loading}
+                         isOpen={isOpen}
+                         onClose={onClose}
+                         sendTariff={sendTariff}/>
+        </>
+    )
+}
 
-                        <AlertDialogBody>
-                            <Stack>
-                                <FormControl isInvalid={isEmpty(state.alias)}>
-                                    <FormLabel>Название</FormLabel>
-                                    <InputGroup>
-                                        <Input value={state.alias}
-                                               onChange={e => setState({...state, alias: e.target.value})}/>
-                                    </InputGroup>
-                                    <FormErrorMessage>Назвние не должно быть пустым</FormErrorMessage>
-                                </FormControl>
-                                <FormControl>
-                                    <FormLabel>Тип</FormLabel>
-                                    <Select value={state.type}
-                                            onChange={e => setState({...state, type: e.target.value})}>
-                                        {Object.keys(tariffType).map(tariff =>
-                                            <option value={tariff} key={tariff}>{tariffType[tariff]}</option>
-                                        )}
-                                    </Select>
-                                    <FormHelperText>
-                                        От этого будут зависить правила тарификации
-                                    </FormHelperText>
-                                </FormControl>
+function TariffInput({state, setState, isOpen, onClose, sendTariff, loading, edit}) {
+
+    let days = Object.keys(DaysOfWeek);
+    let tariffTypeOptions = Object.keys(tariffType).map(tariff => ({
+        value: tariff,
+        label: tariffType[tariff]
+    }));
+    let tariffDayOptions = Object.keys(DaysOfWeek).map(day => ({
+        value: day,
+        label: DaysOfWeek[day]
+    }));
+
+    return (
+        <AlertDialog
+            isOpen={isOpen}
+            onClose={onClose}
+        >
+            <AlertDialogOverlay>
+                <AlertDialogContent>
+                    <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                        {edit ? 'Редактирование тарифа' : 'Добавление тарифа'}
+                    </AlertDialogHeader>
+
+                    <AlertDialogBody>
+                        <Stack>
+                            <FormControl isInvalid={isEmpty(state.alias)}>
+                                <FormLabel>Название</FormLabel>
+                                <InputGroup>
+                                    <Input value={state.alias}
+                                           onChange={e => setState({...state, alias: e.target.value})}/>
+                                </InputGroup>
+                                <FormErrorMessage>Название не должно быть пустым</FormErrorMessage>
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel>Тип</FormLabel>
+                                <Select value={state.type}
+                                        placeholder='Тип'
+                                        colorScheme='brand'
+                                        options={tariffTypeOptions}
+                                        onChange={e => setState({...state, type: e})}/>
+                                <FormHelperText>
+                                    От этого будут зависить правила тарификации
+                                </FormHelperText>
+                            </FormControl>
+                            <FormControl
+                                isInvalid={!isNumeric(state.price) || Number.parseFloat(state.price) < 0.01}>
+                                <FormLabel>Стоимость</FormLabel>
+                                <InputGroup>
+                                    <Input type='number'
+                                           value={state.price}
+                                           onChange={e => setState({...state, price: e.target.value})}/>
+                                    <InputRightAddon>
+                                        {tariffUnit[state.type.value]}
+                                    </InputRightAddon>
+                                </InputGroup>
+                                <FormErrorMessage>Стоимость должна быть больше 0</FormErrorMessage>
+                            </FormControl>
+                            {state.type?.value === 'MINUTE_BY_MINUTE' &&
                                 <FormControl
-                                    isInvalid={!isNumeric(state.price) || Number.parseFloat(state.price) < 0.01}>
-                                    <FormLabel>Стоимость</FormLabel>
+                                    isInvalid={!isNumeric(state.initialPrice) || Number.parseFloat(state.initialPrice) < 0.01}>
+                                    <FormLabel>Начальная стоимость</FormLabel>
                                     <InputGroup>
                                         <Input type='number'
-                                               value={state.price}
-                                               onChange={e => setState({...state, price: e.target.value})}/>
+                                               value={state.initialPrice}
+                                               onChange={e => setState({...state, initialPrice: e.target.value})}/>
                                         <InputRightAddon>
-                                            {tariffUnit[state.type]}
+                                            ₽
                                         </InputRightAddon>
                                     </InputGroup>
                                     <FormErrorMessage>Стоимость должна быть больше 0</FormErrorMessage>
                                 </FormControl>
-                            </Stack>
-                        </AlertDialogBody>
+                            }
+                            {/*<FormControl*/}
+                            {/*    isInvalid={state.days.length === 0}>*/}
+                            {/*    <FormLabel>Расписание</FormLabel>*/}
+                            {/*    <Select*/}
+                            {/*        value={state.days}*/}
+                            {/*        colorScheme='brand'*/}
+                            {/*        isMulti*/}
+                            {/*        onChange={(newValue) => setState({*/}
+                            {/*            ...state,*/}
+                            {/*            days: newValue.sort((a, b) => days.indexOf(a.value) - days.indexOf(b.value))*/}
+                            {/*        })}*/}
+                            {/*        options={tariffDayOptions}*/}
+                            {/*        placeholder='Дни'*/}
+                            {/*    />*/}
+                            {/*    <FormErrorMessage>Стоимость должна быть больше 0</FormErrorMessage>*/}
+                            {/*</FormControl>*/}
+                            <FormControl
+                                isInvalid={!isNumeric(state.deposit) || Number.parseFloat(state.deposit) < 0.01}>
+                                <FormLabel>Депозит</FormLabel>
+                                <InputGroup>
+                                    <Input type='number'
+                                           value={state.deposit}
+                                           onChange={e => setState({...state, deposit: e.target.value})}/>
+                                    <InputRightAddon>
+                                        ₽
+                                    </InputRightAddon>
+                                </InputGroup>
+                                <FormErrorMessage>Стоимость должна быть больше 0</FormErrorMessage>
+                            </FormControl>
+                        </Stack>
+                    </AlertDialogBody>
 
-                        <AlertDialogFooter>
-                            <Button onClick={onClose}
-                                    isDisabled={loading}>
-                                Отмена
-                            </Button>
-                            <Button colorScheme='brand'
-                                    onClick={sendTariff}
-                                    ml={3}
-                                    isDisabled={loading || !isNumeric(state.price) || Number.parseFloat(state.price) < 0.01 || state.alias === ''}>
-                                Добавить
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
-        </>
+                    <AlertDialogFooter>
+                        <Button onClick={onClose}
+                                isDisabled={loading}>
+                            Отмена
+                        </Button>
+                        <Button colorScheme='brand'
+                                onClick={sendTariff}
+                                ml={3}
+                                isDisabled={loading || !isNumeric(state.price) || Number.parseFloat(state.price) < 0.01 || state.alias === ''}>
+                            {edit ? 'Сохранить' : 'Добавить'}
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialogOverlay>
+        </AlertDialog>
     )
 }
 
@@ -271,7 +431,7 @@ export function TarriffSelection({value, onChange}) {
     async function setTariff() {
         try {
             setLoading(true);
-            let changed = await equipmentService.addTariff(value.id, state)
+            let changed = await equipmentService.addTariff(value.id, state.value)
             onClose();
             onChange(changed)
         } catch (e) {
@@ -285,9 +445,6 @@ export function TarriffSelection({value, onChange}) {
         loadTariffs()
     }, [])
 
-    useState(() => {
-        console.log(state)
-    }, [state])
 
 
     return (
@@ -304,19 +461,20 @@ export function TarriffSelection({value, onChange}) {
             >
                 <AlertDialogOverlay>
                     <AlertDialogContent>
-                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                        <AlertDialogHeader fontSize='xl' textAlign='center' fontWeight='bold'>
                             Добавление тарифа
                         </AlertDialogHeader>
 
                         <AlertDialogBody>
                             <Stack>
                                 <FormControl>
-                                    <Select placeholder='Тип'
+                                    <Select placeholder='Тариф'
+                                            options={info.map(tariff => ({
+                                                value: tariff.id,
+                                                label: tariff.alias
+                                            }))}
                                             value={state}
-                                            onChange={e => setState(e.target.value)}>
-                                        {info.map(tariff =>
-                                            <option value={tariff.id} key={tariff.id}>{tariff.alias}</option>
-                                        )}
+                                            onChange={e => setState(e)}>
                                     </Select>
                                     <FormHelperText>
                                         От этого будут зависить правила тарификации
