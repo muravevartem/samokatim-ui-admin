@@ -91,7 +91,7 @@ export function TariffItemInfo({tariff, onChange}) {
             price: tariff.price.toString(),
             initialPrice: tariff.initialPrice.toString(),
             deposit: tariff.deposit.toString(),
-            days: tariff.days.map(day => ({
+            days:(tariff.days??[]).map(day => ({
                 value: day,
                 label: DaysOfWeek[day]
             }))
