@@ -72,8 +72,8 @@ export const toEventBlock = (event) => {
                 </Td>
                 <Td>
                     <HStack>
-                        <Avatar size='sm' name={event.createdBy.email}/>
-                        <Text>{event.createdBy.email}</Text>
+                        <Avatar size='sm' name={event?.createdBy?.email}/>
+                        <Text>{event?.createdBy?.email}</Text>
                     </HStack>
                 </Td>
             </Tr>
