@@ -14,6 +14,10 @@ import {OfficeRegistrationPage} from "./component/rentalpoints/OfficeRegistratio
 import {OfficePage} from "./component/rentalpoints/OfficePage.js";
 import {OfficeOnePage} from "./component/rentalpoints/OfficeOnePage.js";
 import {Alert, AlertIcon} from "@chakra-ui/react";
+import {EmployeeRegistrationPage} from "./component/employees/EmployeeRegistrationPage.js";
+import {EmployeeOnePage} from "./component/employees/EmployeeOnePage.js";
+import {FinancialPage} from "./component/financial/FinancialPage.js";
+import {FinancialOnePage} from "./component/financial/FinancialOnePage.js";
 
 export const routes = {
     root: '/',
@@ -29,6 +33,13 @@ export const routes = {
     signup: '/sign-up',
     confirmationUser: '/confirm',
     '404': '/not-found'
+}
+
+export const routePaths = {
+    'lk': 'Домашняя страница',
+    'offices': 'Офисы',
+    'employees': 'Сотрудники',
+    'inventories': 'Инвентарь'
 }
 
 export const router = createBrowserRouter(
@@ -90,6 +101,15 @@ export const router = createBrowserRouter(
                        <EmployeePage/>
                    }
             />
+            <Route path={`${routes.employees}/new`}
+                   element={
+                       <EmployeeRegistrationPage/>
+                   }
+            />
+            <Route path={`${routes.employees}/:id`}
+                   element={
+                       <EmployeeOnePage/>
+                   }/>
             <Route path={routes.offices}
                    element={
                        <OfficePage/>
@@ -103,6 +123,16 @@ export const router = createBrowserRouter(
             <Route path={`${routes.offices}/:id`}
                    element={
                        <OfficeOnePage/>
+                   }
+            />
+            <Route path={routes.financials}
+                   element={
+                       <FinancialPage/>
+                   }
+            />
+            <Route path={`${routes.financials}/:id`}
+                   element={
+                       <FinancialOnePage/>
                    }
             />
         </Route>

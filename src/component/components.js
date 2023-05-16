@@ -1,4 +1,5 @@
 import {
+    Breadcrumb, BreadcrumbItem, BreadcrumbLink,
     Button,
     Divider,
     Drawer,
@@ -29,6 +30,7 @@ import {
     useToast
 } from "@chakra-ui/react";
 import {
+    IoMdAdd,
     IoMdArrowBack,
     IoMdArrowDown,
     IoMdArrowForward,
@@ -39,15 +41,15 @@ import {
     IoMdMenu
 } from "react-icons/io";
 import React, {useEffect, useState} from "react";
-import {routes} from "../routes.js";
+import {routePaths, routes} from "../routes.js";
 import {userService} from "../service/UserService.js";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {errorConverter} from "../error/ErrorConverter.js";
 
 export function MainHeader({fixed}) {
 
     const [isLargerThan800] = useMediaQuery('(min-width: 800px)')
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const {isOpen, onOpen, onClose} = useDisclosure()
     let navigate = useNavigate();
 
     if (!userService.authenticated())
@@ -55,7 +57,7 @@ export function MainHeader({fixed}) {
 
     return (
         <>
-            <HStack p={4}
+            <HStack p={2}
                     justifyContent='space-between'
                     position={fixed ? 'fixed' : 'relative'}
                     top={0}
@@ -67,35 +69,45 @@ export function MainHeader({fixed}) {
                 {isLargerThan800 &&
                     <HStack alignItems='center' spacing={4}>
                         <Link href={routes.home}
-                              fontSize="2xl"
+                              fontSize="md"
                               textAlign='center'
                               fontWeight="extrabold">
                             Самокатим.Бизнес
                         </Link>
                         <Link href={routes.inventories}
-                              fontSize="xl"
+                              fontSize="md"
                               textAlign='center'
-                              fontWeight="extrabold">
+                              fontWeight='medium'>
                             Инвентарь
                         </Link>
                         <Link href={routes.offices}
-                              fontSize="xl"
+                              fontSize="md"
                               textAlign='center'
-                              fontWeight="extrabold">
+                              fontWeight="medium">
                             Офисы
+                        </Link>
+                        <Link href={routes.employees}
+                              fontSize="md"
+                              textAlign='center'
+                              fontWeight="medium">
+                            Сотрудники
+                        </Link>
+                        <Link href={routes.financials}
+                              fontSize="md"
+                              textAlign='center'
+                              fontWeight="medium">
+                            Финансы
                         </Link>
                     </HStack>
                 }
                 {!isLargerThan800 &&
                     <>
-                        <IconButton fontSize="xl"
-                                    bgGradient="linear(to-l, #7928CA,#FF0080)"
+                        <IconButton colorScheme='brand'
                                     _hover={{bgColor: "linear(to-l, #7928CA,#FF0080)"}}
                                     textAlign='center'
                                     fontWeight="extrabold"
                                     onClick={onOpen}
                                     icon={<IoMdMenu/>}
-
                                     aria-label={'Меню'}>
                         </IconButton>
                         <Drawer
@@ -103,12 +115,11 @@ export function MainHeader({fixed}) {
                             placement='left'
                             onClose={onClose}
                         >
-                            <DrawerOverlay />
+                            <DrawerOverlay/>
                             <DrawerContent>
-                                <DrawerCloseButton />
+                                <DrawerCloseButton/>
                                 <DrawerHeader color='brand.500'>
                                 </DrawerHeader>
-
                                 <DrawerBody>
                                     <Stack p={3} color='brand.500' spacing={4} divider={<Divider/>}>
                                         <Link href={routes.home}
@@ -126,6 +137,16 @@ export function MainHeader({fixed}) {
                                               fontWeight="extrabold">
                                             Офисы
                                         </Link>
+                                        <Link href={routes.employees}
+                                              fontSize="xl"
+                                              fontWeight="extrabold">
+                                            Сотрудники
+                                        </Link>
+                                        <Link href={routes.financials}
+                                              fontSize="xl"
+                                              fontWeight="extrabold">
+                                            Финансы
+                                        </Link>
                                     </Stack>
                                 </DrawerBody>
 
@@ -134,20 +155,22 @@ export function MainHeader({fixed}) {
                     </>
                 }
                 {userService.authenticated() &&
-                    <Button fontSize="xl"
+                    <Button fontSize="md"
+                            p={2}
                             colorScheme='brand'
                             textAlign='center'
                             onClick={() => userService.signout()}
-                            fontWeight="extrabold">
+                            fontWeight="medium">
                         Выйти
                     </Button>
                 }
                 {!userService.authenticated() &&
-                    <Button fontSize="xl"
+                    <Button fontSize="md"
+                            p={2}
                             colorScheme='brand'
                             textAlign='center'
                             onClick={() => navigate(routes.signin)}
-                            fontWeight="extrabold">
+                            fontWeight="medium">
                         Войти
                     </Button>
                 }
@@ -193,10 +216,10 @@ export function InputPassword(props) {
 }
 
 
-export function Pageable({loader, columns, label, baseUrl}) {
+export function Pageable({loader, columns, label, baseUrl, breadcromb, notAddable}) {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState({number: 0})
-    const [pageable, setPageable] = useState({page: 0, size: 5})
+    const [pageable, setPageable] = useState({page: 0, size: 20})
     const [sort, setSort] = useState({
         asc: ['id'],
         desc: []
@@ -246,7 +269,6 @@ export function Pageable({loader, columns, label, baseUrl}) {
     }
 
 
-
     useEffect(
         () => {
             loadData()
@@ -259,19 +281,15 @@ export function Pageable({loader, columns, label, baseUrl}) {
             <Stack w='100%' p={4}>
                 <Stack>
                     <HStack justifyContent='space-between'>
-                        <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                              bgClip='text'
-                              p={2}
-                              fontSize="4xl"
-                              textAlign='center'
-                              fontWeight="extrabold">
-                            {label}
-                        </Text>
-                        <Button colorScheme='brand'
-                                onClick={() => navigate(`${baseUrl}/new`)}>
-                            Добавить
-                        </Button>
+                        {breadcromb}
+                        {!notAddable &&
+                            <IconButton colorScheme='brand'
+                                        icon={<IoMdAdd/>}
+                                        isRound
+                                        onClick={() => navigate(`${baseUrl}/new`)}/>
+                        }
                     </HStack>
+
                 </Stack>
                 <TableContainer minH='75vh'>
                     <Table variant='unstyled'>
@@ -295,7 +313,7 @@ export function Pageable({loader, columns, label, baseUrl}) {
                                     onClick={() => navigate(`${baseUrl}/${item.id}`)}
                                     _hover={{bgColor: 'purple.50'}}>
                                     {columns.map(col => (
-                                        <Td textAlign='center'>{col.getValue(item)}</Td>
+                                        <Td textAlign='center' align='center'>{col.getValue(item)}</Td>
                                     ))}
                                 </Tr>
                             ))}
@@ -304,6 +322,7 @@ export function Pageable({loader, columns, label, baseUrl}) {
                 </TableContainer>
                 <HStack justifyContent='center'>
                     <IconButton icon={<IoMdArrowBack/>}
+                                colorScheme={data.first ? 'gray' : 'brand'}
                                 onClick={() => setPageable({...pageable, page: pageable.page - 1})}
                                 isDisabled={data.first}/>
                     <Button>
@@ -312,6 +331,7 @@ export function Pageable({loader, columns, label, baseUrl}) {
                         </Skeleton>
                     </Button>
                     <IconButton icon={<IoMdArrowForward/>}
+                                colorScheme={data.last ? 'gray' : 'brand'}
                                 onClick={() => setPageable({...pageable, page: pageable.page + 1})}
                                 isDisabled={data.last}/>
                 </HStack>
@@ -356,4 +376,16 @@ function ButtonSort({fieldName, onClick, defaultDirection}) {
     }
 
 
+}
+
+export function MyBreadcrumb({paths}) {
+    return (
+        <Breadcrumb fontWeight='medium' fontSize='md'>
+            {paths.map(p => (
+                <BreadcrumbItem key={p.name} isCurrentPage={!p.url}>
+                    <BreadcrumbLink href={p.url}>{p.name}</BreadcrumbLink>
+                </BreadcrumbItem>
+            ))}
+        </Breadcrumb>
+    );
 }

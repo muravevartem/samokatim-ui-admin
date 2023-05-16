@@ -2,20 +2,12 @@ import moment from "moment";
 import {Avatar, HStack, Tag, Td, Text, Tr} from "@chakra-ui/react";
 import L from 'leaflet';
 
-export const PasswordValidationOptions = {
-    minLength: 8,
-    minLowercase: 0,
-    minUppercase: 0,
-    minNumbers: 0,
-    minSymbols: 0,
-    returnScore: false,
-    pointsPerUnique: 0,
-    pointsPerRepeat: 0,
-    pointsForContainingLower: 0,
-    pointsForContainingUpper: 0,
-    pointsForContainingNumber: 0,
-    pointsForContainingSymbol: 0
-};
+export function toLastPoint(track) {
+    if (track) {
+        return track[track.length - 1];
+    }
+    return null;
+}
 
 export const Icons = {
     INVENTORY_ICON: new L.Icon({
@@ -32,17 +24,31 @@ export const Icons = {
     }),
     PARKING_ICON: new L.Icon({
         iconUrl: '/icons/Parking.png',
-        iconSize: new L.Point(32,32)
+        iconSize: new L.Point(32, 32)
     })
 
 }
 
 
 export const inventoryStatus = {
-    PENDING: 'Простой',
+    PENDING: 'Ожидает',
     IN_WORK: 'В аренде',
     UNDER_REPAIR: 'На обслуживании',
     DECOMMISSIONED: 'Списан'
+}
+
+export const inventoryColorStatus = {
+    PENDING: 'yellow',
+    IN_WORK: 'green',
+    UNDER_REPAIR: 'blue',
+    DECOMMISSIONED: 'red'
+}
+
+export const inventoryType = {
+    BICYCLE: 'Велосипед',
+    BICYCLE_EL: 'Электровелосипед',
+    SCOOTER: 'Самокат',
+    SCOOTER_EL: 'Электросамокат'
 }
 
 export const tariffType = {
