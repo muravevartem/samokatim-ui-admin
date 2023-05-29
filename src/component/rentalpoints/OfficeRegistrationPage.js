@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import {
     Button,
     ButtonGroup,
-    Center,
-    FormControl,
+    Center, Checkbox,
+    FormControl, FormLabel,
     HStack,
     Input,
     InputGroup,
@@ -31,8 +31,8 @@ export function OfficeRegistrationPage() {
         schedules: Object.keys(DaysOfWeek).map(day => (
             {
                 day: day,
-                start: toOffsetTime('08:00'),
-                end: toOffsetTime('22:00')
+                start: '08:00',
+                end: '22:00'
             }
         ))
     })
@@ -94,8 +94,7 @@ export function OfficeRegistrationPage() {
 function StartStep({onPrev, onNext}) {
     return (
         <VStack spacing={10}>
-            <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  bgClip="text"
+            <Text color="brand.600"
                   fontSize="3xl"
                   textAlign='center'
                   fontWeight="extrabold">
@@ -120,8 +119,7 @@ function GeolocationStep({onPrev, onNext, value, onChange}) {
 
     return (
         <VStack p={2} w='100%' h='100vh'>
-            <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  bgClip="text"
+            <Text color="brand.600"
                   fontSize="3xl"
                   textAlign='center'
                   fontWeight="extrabold">
@@ -155,10 +153,16 @@ function GeolocationStep({onPrev, onNext, value, onChange}) {
 
 function ScheduleStep({onPrev, onNext, value, onChange}) {
 
+    function setSchedules(schedule) {
+        onChange({
+            ...value,
+            schedule: schedule
+        })
+    }
+
     return (
         <VStack p={10} spacing={5}>
-            <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  bgClip="text"
+            <Text color="brand.600"
                   fontSize="3xl"
                   textAlign='center'
                   fontWeight="extrabold">
@@ -166,18 +170,59 @@ function ScheduleStep({onPrev, onNext, value, onChange}) {
             </Text>
             <Stack>
                 {(value.schedules ?? []).map((item, index, array) =>
-                    (<OfficeScheduleComponent
-                        key={index}
-                        value={item}
-                        onChange={e => {
-                            array[index] = e
-                            console.log(e)
-                            onChange({
-                                ...value,
-                                schedules: [...array]
-                            })
-                        }}
-                    />))}
+                    (
+                        <FormControl key={index}>
+                            <FormLabel>
+                                {DaysOfWeek[item.day]}
+                            </FormLabel>
+                            <HStack justifyContent='space-between'>
+                                {!item.dayOff &&
+                                    <HStack w='100%'>
+                                        <Input type='time'
+                                               onChange={e => {
+                                                   let time = e.target.value;
+                                                   array[index] = {
+                                                       ...(array[index]),
+                                                       start: time
+                                                   };
+                                                   setSchedules([...array])
+                                               }}
+                                               value={item.start}/>
+                                        <Text> - </Text>
+                                        <Input type='time'
+                                               onChange={e => {
+                                                   let time = e.target.value;
+                                                   array[index] = {
+                                                       ...(array[index]),
+                                                       end: time
+                                                   };
+                                                   setSchedules([...array])
+                                               }}
+                                               value={item.end}/>
+                                    </HStack>
+                                }
+                                {item.dayOff &&
+                                    <HStack w='100%'>
+                                        <Text fontWeight='extrabold'
+                                              w='100%'
+                                              textAlign='center'>
+                                            Выходной
+                                        </Text>
+                                    </HStack>
+                                }
+                                <Checkbox size='lg'
+                                          onChange={e => {
+                                              array[index] = {
+                                                  ...(array[index]),
+                                                  dayOff: e.target.checked
+                                              };
+                                              setSchedules([...array])
+                                          }}
+                                          colorScheme='brand'
+                                          isChecked={item.dayOff}/>
+                            </HStack>
+                        </FormControl>
+                    ))}
             </Stack>
             <HStack justifyContent='center'>
                 <Button onClick={onPrev}>
@@ -192,11 +237,11 @@ function ScheduleStep({onPrev, onNext, value, onChange}) {
     )
 }
 
+
 function NameStep({onPrev, onNext, value, onChange}) {
     return (
         <VStack p={10} spacing={5}>
-            <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  bgClip="text"
+            <Text color="brand.600"
                   fontSize="3xl"
                   textAlign='center'
                   fontWeight="extrabold">
