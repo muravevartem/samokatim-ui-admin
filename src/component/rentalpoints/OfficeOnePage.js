@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {
     Alert,
     AlertDescription,
@@ -11,6 +11,7 @@ import {
     AlertDialogOverlay,
     AlertIcon,
     AlertTitle,
+    Badge,
     Button,
     Center,
     Divider,
@@ -24,23 +25,43 @@ import {
     Text,
     useClipboard,
     useToast,
-    VStack
+    VStack,
+    Tooltip as ChakraTooltip,
+    IconButton,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+    Input,
+    FormLabel,
+    InputGroup,
+    Switch,
+    Checkbox,
+    Table,
+    TableContainer,
+    Thead, Tr, Th, Tbody, Td
 } from "@chakra-ui/react";
 import {equipmentService} from "../../service/EquipmentService.js";
 import {errorConverter} from "../../error/ErrorConverter.js";
-import {MapContainer, Marker, Popup, TileLayer} from "react-leaflet";
+import {MapContainer, Marker, Popup, TileLayer, Tooltip} from "react-leaflet";
 import moment from "moment";
 import {INVENTORY_ICON} from "../icons.js";
-import {inventoryStatus} from "../../util.js";
-import {IoMdHome} from "react-icons/io";
+import {inventoryColorStatus, inventoryStatus, inventoryType} from "../../util.js";
+import {IoMdCreate, IoMdHome} from "react-icons/io";
 import {officeService} from "../../service/OfficeService.js";
 import {OfficeScheduleComponent} from "./OfficeComponents.js";
+import {DaysOfWeek, ShortDaysOfWeek} from "../util";
 
 export function OfficeOnePage() {
     let {id} = useParams();
     let [data, setData] = useState({});
     let [loading, setLoading] = useState(true);
     let toast = useToast();
+    let navigate = useNavigate();
 
     async function loadInventory() {
         try {
@@ -70,49 +91,268 @@ export function OfficeOnePage() {
         <Stack p={5} divider={<Divider/>}>
             <HStack justifyContent='space-between'>
                 <HStack>
-                    <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
+                    <Text bgColor='brand.600'
                           w='max-content'
-                          color='white'
+                          color='brand.100'
                           rounded={20}
                           p={4}
                           fontSize="xl"
                           textAlign='center'
                           fontWeight="extrabold">
-                        <IoMdHome size={72}/>
+                        <IoMdHome size={32}/>
                     </Text>
                     <Text color='brand.500'
                           p={2}
-                          fontSize="6xl"
+                          fontSize="4xl"
                           textAlign='center'
                           fontWeight="extrabold">
                         {data.alias}
                     </Text>
                 </HStack>
             </HStack>
+            <OfficeLocation office={data}/>
             <SimpleGrid columns={[null, 2, 3]} gap={4}>
-                <Field name='Владелец'
-                       copyValue={data.organization?.inn ?? ''}
-                       copyText={`ИНН организации скопирован`}
-                       fieldValue={data.organization?.name ?? ''}
-                />
-                <Field name='Индентификатор'
-                       fieldValue={`${data.id}`}
-                />
-                <Field name='Дата регистрации'
-                       fieldValue={moment(data.createdAt).format('LLL')}
-                />
-                <Field name='Местоположение'
-                       fieldValue={`${data.lat}, ${data.lng}`}
-                />
-                <Field name='Адрес'
-                       fieldValue={data.address}
-                />
+                <Stack>
+                    <Text fontWeight='extrabold' fontSize='2xl'>
+                        Владелец
+                    </Text>
+                    <Stack>
+                        <HStack>
+                            <Text>
+                                Организация
+                            </Text>
+                            <Badge>
+                                {data.organization.name}
+                            </Badge>
+                        </HStack>
+                        <HStack w='100%'>
+                            <Text>
+                                ИНН
+                            </Text>
+                            <Badge>
+                                {data.organization.inn}
+                            </Badge>
+                        </HStack>
+                        <HStack w='100%'>
+                            <Text>
+                                КПП
+                            </Text>
+                            <Badge>
+                                {data.organization.kpp}
+                            </Badge>
+                        </HStack>
+                    </Stack>
+                </Stack>
+                <Stack>
+                    <Text fontWeight='extrabold' fontSize='2xl'>
+                        Местоположение
+                    </Text>
+                    <Stack>
+                        <HStack>
+                            <Text>
+                                Адрес
+                            </Text>
+                            <Badge>
+                                {data.address}
+                            </Badge>
+                        </HStack>
+                        <HStack w='100%'>
+                            <Badge>
+                                {data.lat.toFixed(6)} {data.lng.toFixed(6)}
+                            </Badge>
+                        </HStack>
+                    </Stack>
+                </Stack>
+                <OfficeSchedule data={data} onChange={setData}/>
             </SimpleGrid>
             <Divider/>
-            <OfficeLocation office={data}/>
+            <InventoryTable data={data}/>
             <Divider/>
-            <OfficeSchedules value={data} onChange={setData}/>
+
         </Stack>
+    )
+}
+
+function InventoryTable({data}) {
+    let navigate = useNavigate();
+    return (
+        <Stack spacing={4}>
+            <Text textAlign='center'
+                  fontWeight='extrabold'
+                  fontSize='2xl'>
+                Инвентарь
+            </Text>
+            <TableContainer bgColor='whiteAlpha.300'>
+                <Table variant='unstyled'>
+                    <Thead>
+                        <Tr>
+                            <Th textAlign='center'>
+                                ID
+                            </Th>
+                            <Th textAlign='center'>
+                                Название
+                            </Th>
+                            <Th textAlign='center'>
+                                Модель
+                            </Th>
+                            <Th textAlign='center'>
+                                Тип
+                            </Th>
+                            <Th textAlign='center'>
+                                Статус
+                            </Th>
+                        </Tr>
+
+                    </Thead>
+                    <Tbody>
+                        {data?.inventories?.map(item => (
+                            <Tr key={item.id}
+                                onClick={() => navigate(`/inventories/${item.id}`)}
+                                _hover={{bgColor: 'purple.50'}}>
+                                <Td textAlign='center' align='center'>
+                                    {item.id}
+                                </Td>
+                                <Td textAlign='center' align='center'>
+                                    {item.alias}
+                                </Td>
+                                <Td textAlign='center' align='center'>
+                                    {item.model.name}
+                                </Td>
+                                <Td textAlign='center' align='center'>
+                                    {inventoryType[item.model.type]}
+                                </Td>
+                                <Td textAlign='center' align='center'>
+                                    <Badge colorScheme={inventoryColorStatus[item.status]}>
+                                        {inventoryStatus[item.status]}
+                                    </Badge>
+                                </Td>
+                            </Tr>
+                        ))}
+                    </Tbody>
+                </Table>
+            </TableContainer>
+        </Stack>
+    )
+}
+
+function OfficeSchedule({data, onChange}) {
+    let {isOpen, onOpen, onClose} = useDisclosure();
+    let toast = useToast();
+
+    let [schedules, setSchedules] = useState([...data.schedules] ?? []);
+
+    async function saveChanges() {
+        try {
+            let office = await officeService.changeSchedule(data.id, schedules);
+            onChange(office);
+            onClose();
+        } catch (e) {
+            toast(errorConverter.convertToToastBody(e))
+        } finally {
+
+        }
+    }
+
+    return (
+        <>
+            <Stack>
+                <HStack>
+                    <ChakraTooltip label="Режим работы пункта проката по местному времени">
+                        <Text fontWeight='extrabold'
+                              fontSize='2xl'>
+                            Режим работы
+                        </Text>
+                    </ChakraTooltip>
+                    <IconButton aria-label='modification'
+                                onClick={onOpen}
+                                size='sm'
+                                isRound
+                                icon={<IoMdCreate/>}/>
+                </HStack>
+                <SimpleGrid columns={[null, 2]} gap={3}>
+                    {(data.schedules ?? []).map((item, index) =>
+                        (<OfficeScheduleComponent
+                            key={index}
+                            value={item}
+                        />))}
+                </SimpleGrid>
+            </Stack>
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay/>
+                <ModalContent>
+                    <ModalHeader>
+                        Режим работы
+                    </ModalHeader>
+                    <ModalCloseButton/>
+                    <ModalBody>
+                        <Stack>
+                            {schedules.map((item, index, array) =>
+                                <FormControl key={index}>
+                                    <FormLabel>
+                                        {DaysOfWeek[item.day]}
+                                    </FormLabel>
+                                    <HStack justifyContent='space-between'>
+                                        {!item.dayOff &&
+                                            <HStack w='100%'>
+                                                <Input type='time'
+                                                       onChange={e => {
+                                                           let time = e.target.value;
+                                                           array[index] = {
+                                                               ...(array[index]),
+                                                               start: time
+                                                           };
+                                                           setSchedules([...array])
+                                                       }}
+                                                       value={item.start}/>
+                                                <Text> - </Text>
+                                                <Input type='time'
+                                                       onChange={e => {
+                                                           let time = e.target.value;
+                                                           array[index] = {
+                                                               ...(array[index]),
+                                                               end: time
+                                                           };
+                                                           setSchedules([...array])
+                                                       }}
+                                                       value={item.end}/>
+                                            </HStack>
+                                        }
+                                        {item.dayOff &&
+                                            <HStack w='100%'>
+                                                <Text fontWeight='extrabold'
+                                                      w='100%'
+                                                      textAlign='center'>
+                                                    Выходной
+                                                </Text>
+                                            </HStack>
+                                        }
+                                        <Checkbox size='lg'
+                                                  onChange={e => {
+                                                      array[index] = {
+                                                          ...(array[index]),
+                                                          dayOff: e.target.checked
+                                                      };
+                                                      setSchedules([...array])
+                                                  }}
+                                                  colorScheme='brand'
+                                                  isChecked={item.dayOff}/>
+                                    </HStack>
+                                </FormControl>
+                            )}
+                        </Stack>
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button variant='ghost' onClick={onClose}>
+                            Отмена
+                        </Button>
+                        <Button colorScheme='brand' mr={3} onClick={saveChanges}>
+                            Готово
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
     )
 }
 
@@ -180,67 +420,9 @@ function ModificationStatusBlock({inventory, isOpen, onClose, onUpdate}) {
 
 function OfficeSchedules({value, onChange}) {
     return (
-        <Stack>
-            <Text
-                bgGradient="linear(to-l, #7928CA,#FF0080)"
-                bgClip='text'
-                fontWeight='extrabold'
-                fontSize='xl'>
-                Режим работы
-            </Text>
-            <SimpleGrid minChildWidth={300} gap={4}>
-                {(value.schedules ?? []).map((item, index, array) =>
-                    (<OfficeScheduleComponent
-                        key={index}
-                        value={item}
-                        onChange={e => {
-                            array[index] = e
-                            console.log(e)
-                            onChange({
-                                ...value,
-                                schedules: [...array]
-                            })
-                        }}
-                    />))}
-            </SimpleGrid>
-        </Stack>
-    )
-}
+        <VStack>
 
-
-function Field({name, fieldValue, copyValue, onClick, copyText}) {
-
-    const {onCopy, hasCopied, value, setValue} = useClipboard(copyValue ? copyValue : fieldValue);
-
-    let toast = useToast();
-
-    return (
-        <FormControl>
-            <Text fontSize="xl"
-                  fontWeight="bolder">
-                {name}
-            </Text>
-            <Tag bg='brand.500'
-                 color='white'
-                 cursor={'pointer'}
-                 p={2}
-                 fontSize="xl"
-                 textAlign='center'
-                 onClick={() => {
-                     if (onClick)
-                         onClick()
-                     else {
-                         onCopy()
-                         toast({
-                             status: 'success',
-                             title: copyText ? copyText : 'Скопировано'
-                         })
-                     }
-                 }}
-                 fontWeight="extrabold">
-                {fieldValue}
-            </Tag>
-        </FormControl>
+        </VStack>
     )
 }
 

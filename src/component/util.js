@@ -12,6 +12,16 @@ export const DaysOfWeek = {
     SATURDAY: 'Суббота',
     SUNDAY: 'Воскресенье'
 }
+
+export const ShortDaysOfWeek = {
+    MONDAY: 'Пн',
+    TUESDAY: 'Вт',
+    WEDNESDAY: 'Ср',
+    THURSDAY: 'Чт',
+    FRIDAY: 'Пт',
+    SATURDAY: 'Сб',
+    SUNDAY: 'Вс'
+}
 export const toDayName = (dayOfWeek) => {
     switch (dayOfWeek) {
         case 'MONDAY':

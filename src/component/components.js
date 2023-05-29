@@ -98,6 +98,11 @@ export function MainHeader({fixed}) {
                               fontWeight="medium">
                             Финансы
                         </Link>
+                        <Button colorScheme='brand'
+                                onClick={() => navigate(routes.stopRent)}
+                                size='sm'>
+                            Завершить аренду
+                        </Button>
                     </HStack>
                 }
                 {!isLargerThan800 &&
@@ -147,6 +152,11 @@ export function MainHeader({fixed}) {
                                               fontWeight="extrabold">
                                             Финансы
                                         </Link>
+                                        <Button colorScheme='brand'
+                                                onClick={() => navigate(routes.stopRent)}
+                                                size='sm'>
+                                            Завершить аренду
+                                        </Button>
                                     </Stack>
                                 </DrawerBody>
 
@@ -155,22 +165,16 @@ export function MainHeader({fixed}) {
                     </>
                 }
                 {userService.authenticated() &&
-                    <Button fontSize="md"
-                            p={2}
-                            colorScheme='brand'
-                            textAlign='center'
-                            onClick={() => userService.signout()}
-                            fontWeight="medium">
+                    <Button colorScheme='brand'
+                            size='sm'
+                            onClick={() => userService.signout()}>
                         Выйти
                     </Button>
                 }
                 {!userService.authenticated() &&
-                    <Button fontSize="md"
-                            p={2}
-                            colorScheme='brand'
-                            textAlign='center'
-                            onClick={() => navigate(routes.signin)}
-                            fontWeight="medium">
+                    <Button colorScheme='brand'
+                            size='sm'
+                            onClick={() => navigate(routes.signin)}>
                         Войти
                     </Button>
                 }

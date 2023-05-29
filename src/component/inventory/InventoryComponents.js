@@ -6,7 +6,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogOverlay,
-    Button,
+    Button, HStack,
     Tag,
     useDisclosure,
     useToast,
@@ -40,9 +40,8 @@ export function OfficeSelecton({value, onChange}) {
 
     return (
         <>
-            <VStack w='100%' alignItems='start'>
-                <Tag bgColor='brand.500'
-                     color='white'
+            <HStack>
+                <Tag colorScheme="brand"
                      cursor={'pointer'}
                      p={2}
                      fontSize="xl"
@@ -51,7 +50,7 @@ export function OfficeSelecton({value, onChange}) {
                      fontWeight="extrabold">
                     {value?.office?.alias}
                 </Tag>
-            </VStack>
+            </HStack>
             <AlertDialog
                 isOpen={isOpen}
                 onClose={onClose}

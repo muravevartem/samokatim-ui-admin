@@ -11,6 +11,11 @@ class RentService {
         let response = await $api.get(`/api/v1/rents/${id}?full`);
         return response.data;
     }
+
+    async stop(id, obj) {
+        let axiosResponse = await $api.put(`/api/v1/rents/${id}/stop`, obj);
+        return axiosResponse.data;
+    }
 }
 
 export const rentService = new RentService();

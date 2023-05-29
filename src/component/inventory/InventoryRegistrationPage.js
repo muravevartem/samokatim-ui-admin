@@ -145,7 +145,7 @@ function Step3({onPrev, onNext, value, onChange}) {
                 Класс инвентаря
             </Text>
             <Select value={value} onChange={e => onChange(e.target.value)}>
-                <option value='STANDART'>Стандартный</option>
+                <option value='STANDARD'>Стандартный</option>
                 <option value='VANDAL_RESISTANT'>Вандалозащищенный</option>
                 <option value='EXPENSIVE'>Дорогостоящий</option>
             </Select>

@@ -1,10 +1,32 @@
 import React from "react";
-import {HStack, Input, Stack, Switch, Tag, Text} from "@chakra-ui/react";
-import {toDayName, toLocalTime, toOffsetTime} from "../util.js";
+import {Badge, HStack, Input, Stack, Switch, Tag, Text} from "@chakra-ui/react";
+import {ShortDaysOfWeek, toDayName, toLocalTime, toOffsetTime} from "../util.js";
 
 export function OfficeScheduleComponent({value, onChange}) {
     return (
-        <Stack p={3} bgColor='white' rounded={5}>
+        <Stack>
+            <HStack>
+                <Text>
+                    {ShortDaysOfWeek[value.day]}
+                </Text>
+                {!value.dayOff &&
+                    <Badge colorScheme='brand'>
+                        {toLocalTime(value.start)} - {toLocalTime(value.end)}
+                    </Badge>
+                }
+                {value.dayOff &&
+                    <Badge>
+                        Выходной
+                    </Badge>
+                }
+            </HStack>
+        </Stack>
+    )
+}
+
+/*
+*
+*   <Stack p={3} bgColor='white' rounded={5}>
             <HStack justifyContent='space-between'>
                 <Text color={value.dayOff ? 'gray.500' : 'brand.500'}
                       fontSize="lg"
@@ -64,5 +86,4 @@ export function OfficeScheduleComponent({value, onChange}) {
                 }
             </Stack>
         </Stack>
-    )
-}
+* */

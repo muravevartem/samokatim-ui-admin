@@ -18,6 +18,7 @@ import {EmployeeRegistrationPage} from "./component/employees/EmployeeRegistrati
 import {EmployeeOnePage} from "./component/employees/EmployeeOnePage.js";
 import {FinancialPage} from "./component/financial/FinancialPage.js";
 import {FinancialOnePage} from "./component/financial/FinancialOnePage.js";
+import {StopRentPage} from "./component/StopRentPage";
 
 export const routes = {
     root: '/',
@@ -32,6 +33,7 @@ export const routes = {
     signin: '/sign-in',
     signup: '/sign-up',
     confirmationUser: '/confirm',
+    stopRent: '/stop-rent',
     '404': '/not-found'
 }
 
@@ -135,6 +137,10 @@ export const router = createBrowserRouter(
                        <FinancialOnePage/>
                    }
             />
+            <Route path={routes.stopRent}
+                   element={
+                       <StopRentPage/>
+                   }/>
         </Route>
     )
 )

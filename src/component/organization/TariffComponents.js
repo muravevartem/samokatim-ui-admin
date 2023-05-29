@@ -129,7 +129,7 @@ export function TariffItemInfo({tariff, onChange}) {
                                         onClick={openEditMode}
                                         icon={<IoMdConstruct/>}/>
                             <IconButton aria-label='delete'
-                                        colorScheme='pink'
+                                        colorScheme='red'
                                         size='sm'
                                         onClick={deleteTariff}
                                         icon={<IoMdTrash/>}/>
@@ -300,22 +300,6 @@ function TariffInput({state, setState, isOpen, onClose, sendTariff, loading, edi
                                     <FormErrorMessage>Стоимость должна быть больше 0</FormErrorMessage>
                                 </FormControl>
                             }
-                            {/*<FormControl*/}
-                            {/*    isInvalid={state.days.length === 0}>*/}
-                            {/*    <FormLabel>Расписание</FormLabel>*/}
-                            {/*    <Select*/}
-                            {/*        value={state.days}*/}
-                            {/*        colorScheme='brand'*/}
-                            {/*        isMulti*/}
-                            {/*        onChange={(newValue) => setState({*/}
-                            {/*            ...state,*/}
-                            {/*            days: newValue.sort((a, b) => days.indexOf(a.value) - days.indexOf(b.value))*/}
-                            {/*        })}*/}
-                            {/*        options={tariffDayOptions}*/}
-                            {/*        placeholder='Дни'*/}
-                            {/*    />*/}
-                            {/*    <FormErrorMessage>Стоимость должна быть больше 0</FormErrorMessage>*/}
-                            {/*</FormControl>*/}
                             <FormControl
                                 isInvalid={!isNumeric(state.deposit) || Number.parseFloat(state.deposit) < 0.01}>
                                 <FormLabel>Депозит</FormLabel>
@@ -374,8 +358,7 @@ export function TariffItem({tariff, value, onChange}) {
                  closeOnBlur={false}
                  isOpen={isOpen}>
             <PopoverTrigger>
-                <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
-                     color='white'
+                <Tag colorScheme='brand'
                      cursor={'pointer'}
                      p={2}
                      fontSize="xl"

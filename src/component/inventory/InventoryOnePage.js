@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {
     Alert,
     AlertDescription,
@@ -15,7 +15,7 @@ import {
     Center,
     Divider,
     FormControl,
-    HStack,
+    HStack, IconButton,
     Select,
     SimpleGrid,
     Spinner,
@@ -38,6 +38,7 @@ import {INVENTORY_ICON} from "../icons.js";
 import {inventoryStatus, toEventBlock} from "../../util.js";
 import {TariffItem, TarriffSelection} from "../organization/TariffComponents.js";
 import {OfficeSelecton} from "./InventoryComponents.js";
+import {IoMdAt, IoMdAttach, IoMdGlasses, IoMdGlobe, IoMdHome, IoMdNavigate, IoMdReturnRight} from "react-icons/io";
 
 export function InventoryOnePage() {
     let {id} = useParams();
@@ -75,9 +76,9 @@ export function InventoryOnePage() {
         <Stack p={5} divider={<Divider/>}>
             <HStack justifyContent='space-between'>
                 <HStack>
-                    <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                          w='max-content'
-                          color='white'
+                    <Text w='max-content'
+                          bgColor='brand.600'
+                          color='brand.100'
                           rounded={20}
                           p={4}
                           fontSize="xl"
@@ -85,8 +86,7 @@ export function InventoryOnePage() {
                           fontWeight="extrabold">
                         <EquipmentLogo type={inventory.model.type} size={72}/>
                     </Text>
-                    <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                          bgClip='text'
+                    <Text color='brand.600'
                           p={2}
                           fontSize="6xl"
                           textAlign='center'
@@ -206,8 +206,7 @@ function InventoryEventBlock({inventory}) {
     return (
         <TableContainer>
             <Stack>
-                <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
-                      bgClip='text'
+                <Text color='brand.600'
                       p={2}
                       fontSize="3xl"
                       textAlign='center'
@@ -237,8 +236,7 @@ function Field({name, fieldValue, copyValue, onClick, copyText}) {
                   fontWeight="bolder">
                 {name}
             </Text>
-            <Tag bgGradient="linear(to-l, #7928CA,#FF0080)"
-                 color='white'
+            <Tag colorScheme='brand'
                  cursor={'pointer'}
                  p={2}
                  fontSize="xl"
@@ -277,13 +275,18 @@ function TariffField({value, onChange}) {
 }
 
 function OfficeField({value, onChange}) {
+    let navigate = useNavigate();
     return (
         <FormControl>
             <Text fontSize="xl"
                   fontWeight="bolder">
                 Офис
             </Text>
-            <HStack wrap='wrap' gap={1} spacing={0}>
+            <HStack spacing={1} justifyContent='start'>
+                <IconButton aria-label='navigate-to-office'
+                            size='sm'
+                            onClick={() => navigate(`/offices/${value?.office?.id}`)}
+                            icon={<IoMdReturnRight/>}/>
                 <OfficeSelecton value={value} onChange={onChange}/>
             </HStack>
         </FormControl>

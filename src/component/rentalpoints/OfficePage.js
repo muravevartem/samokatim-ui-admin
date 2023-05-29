@@ -1,5 +1,5 @@
 import React from "react";
-import {Pageable} from "../components.js";
+import {MyBreadcrumb, Pageable} from "../components.js";
 import {routes} from "../../routes.js";
 import {officeService} from "../../service/OfficeService.js";
 
@@ -10,6 +10,16 @@ export function OfficePage() {
             loader={async (pageable) => {
                 return officeService.getAllMy(pageable);
             }}
+            breadcromb={
+                <MyBreadcrumb paths={[
+                    {
+                        name: 'Домашняя страница',
+                        url: '/'
+                    },
+                    {
+                        name: 'Офисы'
+                    }
+                ]}/>}
             columns={[
                 {
                     name: 'ID',
