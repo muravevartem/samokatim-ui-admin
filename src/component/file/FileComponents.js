@@ -194,7 +194,7 @@ function ImageUpload({files, setFiles, multiple = false, onUpload}) {
     return (
         <Stack>
             <input type='file'
-                   accept='image/jpeg'
+                   accept='image/*'
                    multiple={multiple}
                    id='input-id'
                    style={{display: 'none'}}
