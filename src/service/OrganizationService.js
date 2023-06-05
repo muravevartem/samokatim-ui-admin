@@ -1,4 +1,6 @@
 import {$api} from "../http.js";
+import {AxiosError} from "axios";
+import {userService} from "./UserService";
 
 class OrganizationService {
 
@@ -13,8 +15,14 @@ class OrganizationService {
     }
 
     async getMyOrg(){
-        let axiosResponse = await $api.get(`/api/v1/orgs/me`);
-        return axiosResponse.data;
+        try {
+            let axiosResponse = await $api.get(`/api/v1/orgs/me`);
+            return axiosResponse.data;
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                await userService.signout();
+            }
+        }
     }
 
     async getTariffs() {

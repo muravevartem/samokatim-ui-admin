@@ -49,8 +49,6 @@ export function RegistrationPage() {
         (<RegPageStep3 company={company}/>)
     ]
 
-    console.log(step)
-
     return steps[step];
 }
 

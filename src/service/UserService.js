@@ -1,5 +1,6 @@
 import {events, eventService} from "./EventService.js";
 import {$api} from "../http.js";
+import {AppEvents, eventBus} from "./EventBus";
 
 class UserService {
     constructor() {
@@ -17,7 +18,6 @@ class UserService {
                 password: cred.password,
                 roles: ['LOCAL_ADMIN']
             });
-            console.log(response)
             let data = response.data;
             this.token = data.accessToken;
             localStorage.setItem('token', data.accessToken);
@@ -30,7 +30,7 @@ class UserService {
     async signout() {
         localStorage.removeItem('token');
         this.token = undefined;
-        eventService.raise(events.logout)
+        eventBus.raise(AppEvents.LogOut)
     }
 
     async resetPassword(cred) {
@@ -39,7 +39,6 @@ class UserService {
     }
 
     authenticated() {
-        console.log(this.token);
         return this.token != null;
     }
 

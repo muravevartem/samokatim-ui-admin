@@ -23,5 +23,6 @@ export const eventBus = new EventBus();
 
 export const AppEvents = {
     MarkerLocated: "MarkerLocated",
-    LogoUploaded: 'LogoUploaded'
+    LogoUploaded: 'LogoUploaded',
+    LogOut: 'LogOut'
 }

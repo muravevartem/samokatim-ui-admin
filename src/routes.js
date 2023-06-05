@@ -95,51 +95,71 @@ export const router = createBrowserRouter(
             />
             <Route path={`${routes.inventories}/:id`}
                    element={
-                       <InventoryOnePage/>
+                       <SecuredPage>
+                           <InventoryOnePage/>
+                       </SecuredPage>
                    }
             />
             <Route path={routes.employees}
                    element={
-                       <EmployeePage/>
+                       <SecuredPage>
+                           <EmployeePage/>
+                       </SecuredPage>
                    }
             />
             <Route path={`${routes.employees}/new`}
                    element={
-                       <EmployeeRegistrationPage/>
+                       <SecuredPage>
+                           <EmployeeRegistrationPage/>
+                       </SecuredPage>
                    }
             />
             <Route path={`${routes.employees}/:id`}
                    element={
-                       <EmployeeOnePage/>
+                       <SecuredPage>
+                           <EmployeeOnePage/>
+                       </SecuredPage>
                    }/>
             <Route path={routes.offices}
                    element={
-                       <OfficePage/>
+                       <SecuredPage>
+                           <OfficePage/>
+                       </SecuredPage>
                    }
             />
             <Route path={`${routes.offices}/new`}
                    element={
-                       <OfficeRegistrationPage/>
+                       <SecuredPage>
+                           <OfficeRegistrationPage/>
+                       </SecuredPage>
                    }
             />
             <Route path={`${routes.offices}/:id`}
                    element={
-                       <OfficeOnePage/>
+                       <SecuredPage>
+                           <OfficeOnePage/>
+                       </SecuredPage>
                    }
             />
             <Route path={routes.financials}
                    element={
-                       <FinancialPage/>
+                       <SecuredPage>
+                           <FinancialPage/>
+                       </SecuredPage>
                    }
             />
             <Route path={`${routes.financials}/:id`}
                    element={
-                       <FinancialOnePage/>
+                       <SecuredPage>
+                           <FinancialOnePage/>
+                       </SecuredPage>
                    }
             />
             <Route path={routes.stopRent}
                    element={
-                       <StopRentPage/>
+                       <SecuredPage>
+                           <StopRentPage/>
+                       </SecuredPage>
                    }/>
         </Route>
     )

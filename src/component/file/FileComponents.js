@@ -27,9 +27,9 @@ export function InputImage({children, onUpload}) {
     const cancelRef = React.useRef()
     let [files, setFiles] = useState([]);
 
-    useState(() => {
-        console.log(files)
-    }, [files])
+    // useState(() => {
+    //     console.log(files)
+    // }, [files])
 
     return (
         <>
@@ -164,6 +164,14 @@ function ImageUpload({files, setFiles, multiple = false, onUpload}) {
             if (filesForUpload.length === 0) {
                 return;
             }
+            let largeFiles = filesForUpload.filter(x=>x.size > 1050624);
+            if (largeFiles.length > 0) {
+                toast({
+                    status: 'error',
+                    title: 'Файл привышает допустимый размер'
+                });
+                return;
+            }
             setLoading(true);
             let uploadedFile = await fileService.upload(filesForUpload[0]);
             if (multiple) {
@@ -243,11 +251,18 @@ function ImageUpload({files, setFiles, multiple = false, onUpload}) {
                            p={2}>
                         <Stack>
                             {!loading &&
-                                <Text textAlign='center'
-                                      color='brand.600'
-                                      fontWeight='extrabold'>
-                                    Выбрать файл
-                                </Text>
+                                <Stack>
+                                    <Text textAlign='center'
+                                          color='brand.600'
+                                          fontWeight='extrabold'>
+                                        Выбрать файл
+                                    </Text>
+                                    <Text textAlign='center'
+                                          color='brand.600'
+                                          fontWeight='light'>
+                                        Файл не может привышать 1Мб
+                                    </Text>
+                                </Stack>
                             }
                             {loading &&
                                 <CircularProgress isIndeterminate/>
