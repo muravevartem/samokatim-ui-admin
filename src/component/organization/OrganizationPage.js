@@ -122,7 +122,7 @@ function BillingInfo() {
     async function load() {
         try {
             setLoading(true);
-            let revenue = await rentStatService.loadStat(moment(), moment());
+            let revenue = await rentStatService.loadStat(moment().startOf('day'), moment().endOf('day'));
             setData(revenue[0]);
         } catch (e) {
 
