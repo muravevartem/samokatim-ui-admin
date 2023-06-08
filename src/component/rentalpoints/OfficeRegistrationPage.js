@@ -69,7 +69,7 @@ export function OfficeRegistrationPage() {
     }
 
     useEffect(() => {
-        console.log(office)
+        // console.log(office)
     }, [office])
 
     const steps = [

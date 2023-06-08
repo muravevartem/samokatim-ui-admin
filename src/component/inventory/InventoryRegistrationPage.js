@@ -163,7 +163,7 @@ function Step3({onPrev, onNext, value, onChange}) {
 }
 
 function SupportesTelemetry({onPrev, onNext, value, onChange}) {
-    console.log(value)
+    // console.log(value)
     return (
         <VStack p={10} spacing={5}>
             <Text bgGradient="linear(to-l, #7928CA,#FF0080)"
