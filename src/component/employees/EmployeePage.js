@@ -42,12 +42,6 @@ export function EmployeePage() {
                     getValue: (row) => row.email
                 },
                 {
-                    name: 'Номер телефона',
-                    fieldName: 'tel',
-                    disabledSort: true,
-                    getValue: (row) => row.tel
-                },
-                {
                     name: 'Статус',
                     fieldName: 'status',
                     disabledSort: false,
